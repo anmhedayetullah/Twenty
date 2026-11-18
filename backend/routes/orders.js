@@ -26,12 +26,19 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ message: "Complete customer and order information is required." });
         }
 
+        const normalizedCustomer = {
+            ...body.customer,
+            email: (body.customer.email || "").trim().toLowerCase(),
+            phone: (body.customer.phone || "").trim()
+        };
+
         const subtotal = body.items.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
         const delivery = subtotal >= 3000 ? 0 : (body.customer.city === "outside" ? 130 : 80);
         const orderId = "TW-" + Math.floor(1000 + Math.random() * 9000);
 
         const order = await Order.create({
             ...body,
+            customer: normalizedCustomer,
             orderId,
             subtotal,
             delivery,
@@ -47,7 +54,10 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
     try {
         const filter = {};
-        if (req.query.email) filter["customer.email"] = req.query.email.toLowerCase();
+        if (req.query.email) {
+            const cleanEmail = req.query.email.trim().toLowerCase();
+            filter["customer.email"] = { $regex: new RegExp(`^${cleanEmail.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") };
+        }
         if (req.query.status) filter.status = req.query.status;
         res.json(await Order.find(filter).sort({ createdAt: -1 }));
     } catch (error) {

@@ -20,6 +20,7 @@ function updateCartCount() {
 
     if (counter) {
         counter.textContent = totalItems;
+        counter.classList.toggle("hidden", totalItems === 0);
     }
 }
 
@@ -31,7 +32,7 @@ async function getOrders() {
             const response = await fetch(`https://twenty-topaz-six.vercel.app/api/orders?email=${encodeURIComponent(currentUser.email)}`);
             if (response.ok) {
                 const remoteOrders = await response.json();
-                if (remoteOrders.length) return remoteOrders;
+                return Array.isArray(remoteOrders) ? remoteOrders : [];
             }
         } catch (error) {
         }
@@ -59,18 +60,21 @@ function formatDate(isoString) {
 
 // 5. STATUS BADGE
 function getStatusBadge(status) {
-    const current = status || "Pending";
+    const current = (status || "Pending").trim();
 
-    if (current === "Delivered") {
-        return `<span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1.5 uppercase tracking-wider">Delivered</span>`;
+    if (current === "Confirmed") {
+        return `<span class="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1.5 uppercase tracking-wider">Confirmed</span>`;
     }
     if (current === "Shipped") {
-        return `<span class="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1.5 uppercase tracking-wider">Shipped</span>`;
+        return `<span class="bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1.5 uppercase tracking-wider">Shipped</span>`;
+    }
+    if (current === "Delivered") {
+        return `<span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1.5 uppercase tracking-wider">Delivered</span>`;
     }
     if (current === "Cancelled") {
         return `<span class="bg-red-100 text-red-800 text-xs font-semibold px-3 py-1.5 uppercase tracking-wider">Cancelled</span>`;
     }
-    return `<span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1.5 uppercase tracking-wider">Pending</span>`;
+    return `<span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1.5 uppercase tracking-wider">${current}</span>`;
 }
 
 // 6. DISPLAY ORDERS
@@ -123,7 +127,7 @@ async function renderOrders(searchTerm = "") {
 
     // Render Order Cards
     container.innerHTML = filteredOrders.map(order => {
-        const itemsHtml = order.items.map(item => `
+        const itemsHtml = (order.items || []).map(item => `
             <div class="flex items-center justify-between gap-4 py-4">
                 <div class="flex items-center gap-4">
                     <img src="${item.image}"
@@ -133,8 +137,8 @@ async function renderOrders(searchTerm = "") {
                     <div>
                         <h4 class="text-sm font-bold text-dark">${item.name}</h4>
                         <p class="text-xs text-gray-500 mt-1">
-                            Size: <span class="text-dark font-medium">${item.size}</span> |
-                            Color: <span class="text-dark font-medium">${item.color}</span> |
+                            Size: <span class="text-dark font-medium">${item.size || "Standard"}</span> |
+                            ${item.color ? `Color: <span class="text-dark font-medium">${item.color}</span> |` : ""}
                             Qty: <span class="text-dark font-medium">${item.quantity}</span>
                         </p>
                     </div>
@@ -199,7 +203,7 @@ async function renderOrders(searchTerm = "") {
 }
 
 // 7. SEARCH LISTENER
-document.getElementById("order-search").addEventListener("input", (e) => {
+document.getElementById("order-search")?.addEventListener("input", (e) => {
     renderOrders(e.target.value);
 });
 

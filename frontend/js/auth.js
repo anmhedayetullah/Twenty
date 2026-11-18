@@ -285,6 +285,16 @@ document.getElementById("logout-btn").addEventListener("click", () => {
     renderAccountState();
 });
 
+function handlePostLoginRedirect() {
+    const redirectTarget = sessionStorage.getItem("twentyRedirectAfterLogin");
+    if (redirectTarget) {
+        sessionStorage.removeItem("twentyRedirectAfterLogin");
+        window.location.href = redirectTarget;
+        return true;
+    }
+    return false;
+}
+
 // 5. CREATE ACCOUNT
 signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -311,10 +321,12 @@ signupForm.addEventListener("submit", async (e) => {
         } else {
             localStorage.setItem("twentyAuthToken", data.token);
             localStorage.setItem("twentyCurrentUser", JSON.stringify(data.user));
-            renderAccountState();
+            if (!handlePostLoginRedirect()) {
+                renderAccountState();
+            }
         }
     } catch (err) {
-        showAuthAlert("Cannot connect to server. Make sure backend is running on port 5000.", true);
+        showAuthAlert("Cannot connect to server. Make sure backend is running.", true);
     } finally {
         sendBtn.disabled = false;
         sendBtn.textContent = "CREATE ACCOUNT →";
@@ -353,10 +365,12 @@ signinForm.addEventListener("submit", async (e) => {
                 window.location.href = "admin.html";
                 return;
             }
-            renderAccountState();
+            if (!handlePostLoginRedirect()) {
+                renderAccountState();
+            }
         }
     } catch (err) {
-        showAuthAlert("Cannot connect to server. Make sure backend is running on port 5000.", true);
+        showAuthAlert("Cannot connect to server. Make sure backend is running.", true);
     } finally {
         btn.disabled = false;
         btn.textContent = "SIGN IN →";

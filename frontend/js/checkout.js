@@ -2,6 +2,16 @@
    TWENTY — CHECKOUT (CASH ON DELIVERY ONLY)
 ========================================== */
 
+
+(function requireLoginForCheckout() {
+    const token = localStorage.getItem("twentyAuthToken");
+    const user = localStorage.getItem("twentyCurrentUser");
+    if (!token || !user || user === "null") {
+        sessionStorage.setItem("twentyRedirectAfterLogin", "checkout.html");
+        window.location.replace("login.html");
+    }
+})(); 
+
 function getLoggedInUser() {
     const token = localStorage.getItem("twentyAuthToken");
     const user = JSON.parse(localStorage.getItem("twentyCurrentUser") || "null");

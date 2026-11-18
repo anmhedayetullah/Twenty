@@ -21,7 +21,7 @@ async function initializeAccountMenu() {
     if (!token || !user) return;
 
     try {
-        const response = await fetch("http://localhost:5000/api/auth/me", {
+        const response = await fetch("https://twenty-topaz-six.vercel.app/api/auth/me", {
             headers: { "Authorization": `Bearer ${token}` }
         });
         if (!response.ok) throw new Error("Expired session");

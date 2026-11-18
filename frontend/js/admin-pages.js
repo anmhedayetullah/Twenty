@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://twenty-topaz-six.vercel.app/api";
 
 const pageLabels = {
     profile: ["Profile", "admin.html"],

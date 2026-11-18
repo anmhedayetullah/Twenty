@@ -28,7 +28,7 @@ async function getOrders() {
     const currentUser = JSON.parse(localStorage.getItem("twentyCurrentUser"));
     if (currentUser?.email) {
         try {
-            const response = await fetch(`http://localhost:5000/api/orders?email=${encodeURIComponent(currentUser.email)}`);
+            const response = await fetch(`https://twenty-topaz-six.vercel.app/api/orders?email=${encodeURIComponent(currentUser.email)}`);
             if (response.ok) {
                 const remoteOrders = await response.json();
                 if (remoteOrders.length) return remoteOrders;

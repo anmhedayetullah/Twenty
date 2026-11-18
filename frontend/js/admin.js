@@ -2,9 +2,8 @@
    TWENTY — ADMIN DASHBOARD FUNCTIONALITY
 ========================================== */
 
-// Private admin credentials (keep synced with js/auth.js)
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "twenty@2026";
+const API_BASE = "https://twenty-topaz-six.vercel.app/api";
+let dashboardOrders = [];
 
 // 1. MOBILE MENU TOGGLE
 const menuToggle = document.getElementById("menu-toggle");
@@ -33,12 +32,40 @@ function updateCartCount() {
 }
 
 // 3. HELPERS
-function getOrders() {
-    return JSON.parse(localStorage.getItem("twentyOrders")) || [];
+function getAuthHeaders() {
+    const token = localStorage.getItem("twentyAuthToken");
+    return token
+        ? { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
+        : { "Content-Type": "application/json" };
 }
 
-function saveOrders(orders) {
-    localStorage.setItem("twentyOrders", JSON.stringify(orders));
+async function getOrders() {
+    if (dashboardOrders.length) return dashboardOrders;
+    const response = await fetch(`${API_BASE}/orders`);
+    if (!response.ok) return JSON.parse(localStorage.getItem("twentyOrders")) || [];
+    dashboardOrders = await response.json();
+    return dashboardOrders;
+}
+
+async function loadDashboard() {
+    const response = await fetch(`${API_BASE}/orders/admin/dashboard`, { headers: getAuthHeaders() });
+    if (response.status === 401 || response.status === 403) {
+        sessionStorage.removeItem("twentyAdminLoggedIn");
+        await checkAdminSession();
+        return;
+    }
+    if (!response.ok) return;
+    const data = await response.json();
+    dashboardOrders = data.orders;
+    if (data.stats) {
+        document.getElementById("stat-total-orders").textContent = data.stats.totalOrders;
+        document.getElementById("stat-revenue").textContent = formatPrice(data.stats.revenue);
+        document.getElementById("stat-pending").textContent = data.stats.pendingOrders;
+        document.getElementById("stat-delivered").textContent = data.stats.deliveredOrders;
+        document.getElementById("stat-customers").textContent = data.stats.customers;
+        document.getElementById("stat-products").textContent = data.stats.products;
+    }
+    renderDashboard();
 }
 
 function formatPrice(price) {
@@ -113,33 +140,54 @@ function getQuickActionButtons(orderId, status) {
 }
 
 // 4. ADMIN SESSION CHECK
-function checkAdminSession() {
-    const isLoggedIn = sessionStorage.getItem("twentyAdminLoggedIn") === "true";
+async function checkAdminSession() {
     const loginBox = document.getElementById("admin-login-box");
     const dashboard = document.getElementById("admin-dashboard");
 
-    if (isLoggedIn) {
+    const token = localStorage.getItem("twentyAuthToken");
+    if (!token) {
+        loginBox.classList.remove("hidden");
+        dashboard.classList.add("hidden");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/auth/me`, { headers: getAuthHeaders() });
+        const user = await response.json();
+        if (!response.ok || user.role !== "admin") throw new Error("Admin access required");
         loginBox.classList.add("hidden");
         dashboard.classList.remove("hidden");
-        renderDashboard();
-    } else {
+        await loadDashboard();
+    } catch (error) {
         loginBox.classList.remove("hidden");
         dashboard.classList.add("hidden");
     }
 }
 
-document.getElementById("admin-login-form").addEventListener("submit", (e) => {
+document.getElementById("admin-login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const enteredUser = document.getElementById("admin-username-input").value.trim();
     const enteredPass = document.getElementById("admin-password-input").value;
     const errorMsg = document.getElementById("admin-login-error");
 
-    if (enteredUser === ADMIN_USERNAME && enteredPass === ADMIN_PASSWORD) {
+    try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: enteredUser, password: enteredPass })
+        });
+        const data = await response.json();
+        if (!response.ok || data.user?.role !== "admin") {
+            throw new Error(data.message || "Invalid admin account");
+        }
+        localStorage.setItem("twentyAuthToken", data.token);
+        localStorage.setItem("twentyCurrentUser", JSON.stringify(data.user));
         sessionStorage.setItem("twentyAdminLoggedIn", "true");
         errorMsg.classList.add("hidden");
         document.getElementById("admin-login-form").reset();
-        checkAdminSession();
-    } else {
+        await checkAdminSession();
+    } catch (error) {
+        errorMsg.textContent = error.message || "Unable to sign in. Please try again.";
         errorMsg.classList.remove("hidden");
     }
 });
@@ -165,8 +213,8 @@ function updateStats(orders) {
 }
 
 // 6. RENDER ORDERS IN ADMIN PANEL
-function renderDashboard() {
-    const allOrders = getOrders();
+async function renderDashboard() {
+    const allOrders = dashboardOrders.length ? dashboardOrders : await getOrders();
     updateStats(allOrders);
 
     const statusFilter = document.getElementById("admin-status-filter").value;
@@ -328,29 +376,29 @@ function renderDashboard() {
 }
 
 // 7. UPDATE ORDER STATUS
-function changeOrderStatus(orderId, newStatus) {
-    const orders = getOrders();
-    const index = orders.findIndex(o => o.orderId === orderId);
-
-    if (index !== -1) {
-        orders[index].status = newStatus;
-        saveOrders(orders);
-        renderDashboard();
-    }
+async function changeOrderStatus(orderId, newStatus) {
+    const order = dashboardOrders.find(item => item.orderId === orderId);
+    if (!order?._id) return;
+    await fetch(`${API_BASE}/orders/${order._id}/status`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status: newStatus })
+    });
+    await loadDashboard();
 }
 
 // 8. SAVE ADMIN INTERNAL NOTE
-function saveAdminNote(orderId) {
+async function saveAdminNote(orderId) {
     const input = document.getElementById(`note-${orderId}`);
     if (!input) return;
 
-    const orders = getOrders();
-    const index = orders.findIndex(o => o.orderId === orderId);
-
-    if (index !== -1) {
-        orders[index].adminNote = input.value.trim();
-        saveOrders(orders);
-
+    const order = dashboardOrders.find(item => item.orderId === orderId);
+    if (order?._id) {
+        await fetch(`${API_BASE}/orders/${order._id}`, {
+            method: "PATCH",
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ adminNote: input.value.trim() })
+        });
         const badge = document.getElementById(`note-saved-${orderId}`);
         if (badge) {
             badge.classList.remove("hidden");
@@ -360,8 +408,9 @@ function saveAdminNote(orderId) {
 }
 
 // 9. PRINT INVOICE / PARCEL SLIP
-function printInvoice(orderId) {
-    const order = getOrders().find(o => o.orderId === orderId);
+async function printInvoice(orderId) {
+    const orders = await getOrders();
+    const order = orders.find(o => o.orderId === orderId);
     if (!order) return;
 
     const printWindow = window.open("", "_blank", "width=800,height=900");
@@ -471,8 +520,8 @@ function printInvoice(orderId) {
 }
 
 // 10. EXPORT ALL ORDERS AS CSV
-function exportOrdersCSV() {
-    const orders = getOrders();
+async function exportOrdersCSV() {
+    const orders = dashboardOrders.length ? dashboardOrders : await getOrders();
     if (orders.length === 0) {
         alert("No orders available to export.");
         return;
@@ -537,12 +586,15 @@ function exportOrdersCSV() {
 }
 
 // 11. DELETE ORDER
-function deleteOrder(orderId) {
+async function deleteOrder(orderId) {
     if (!confirm(`Are you sure you want to delete order ${orderId}?`)) return;
-
-    const orders = getOrders().filter(o => o.orderId !== orderId);
-    saveOrders(orders);
-    renderDashboard();
+    const order = dashboardOrders.find(item => item.orderId === orderId);
+    if (!order?._id) return;
+    const response = await fetch(`${API_BASE}/orders/${order._id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders()
+    });
+    if (response.ok) await loadDashboard();
 }
 
 // 12. EVENT LISTENERS & INITIALIZE

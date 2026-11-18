@@ -2,6 +2,17 @@
    TWENTY — CHECKOUT (CASH ON DELIVERY ONLY)
 ========================================== */
 
+function getLoggedInUser() {
+    const token = localStorage.getItem("twentyAuthToken");
+    const user = JSON.parse(localStorage.getItem("twentyCurrentUser") || "null");
+    return token && user ? user : null;
+}
+
+if (!getLoggedInUser()) {
+    sessionStorage.setItem("twentyRedirectAfterLogin", "checkout.html");
+    window.location.replace("login.html");
+}
+
 // 1. MOBILE MENU TOGGLE
 const menuToggle = document.getElementById("menu-toggle");
 const mobileMenu = document.getElementById("mobile-menu");

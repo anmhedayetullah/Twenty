@@ -1,4 +1,4 @@
-const PRODUCTS_API = "https://twenty-topaz-six.vercel.app/api/products";
+const PRODUCTS_API = "http://localhost:5000/api/products";
 
 const params = new URLSearchParams(window.location.search);
 const productId = params.get("id");
@@ -262,9 +262,14 @@ document.getElementById("add-to-cart")?.addEventListener("click", () => {
 });
 
 document.getElementById("buy-now")?.addEventListener("click", () => {
-    if (addProductToCart()) {
-        window.location.href = "cart.html";
+    if (!addProductToCart()) return;
+    const isLoggedIn = localStorage.getItem("twentyAuthToken") && localStorage.getItem("twentyCurrentUser");
+    if (!isLoggedIn) {
+        sessionStorage.setItem("twentyRedirectAfterLogin", "checkout.html");
+        window.location.href = "login.html";
+        return;
     }
+    window.location.href = "checkout.html";
 });
 
 

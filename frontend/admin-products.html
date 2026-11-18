@@ -1,7 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Admin Products — TWENTY</title><script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="css/style.css"><script>tailwind.config={theme:{extend:{colors:{coral:'#D85A30',cream:'#F8F5F0',dark:'#171717'}}}};</script></head>
-<body data-admin-page="products" class="font-sans bg-white text-dark">
-<div id="admin-layout" class="flex"></div>
-<script src="js/admin-pages.js"></script>
-</body></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Products — TWENTY</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Brand Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coral: '#D85A30',
+                        cream: '#F8F5F0',
+                        dark: '#171717'
+                    },
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body data-admin-page="products" class="font-sans bg-cream/40 text-dark min-h-screen flex flex-col">
+
+    <!-- Top Admin Status Bar -->
+    <div class="bg-dark text-white text-center py-2 px-4 text-[11px] tracking-[3px] uppercase">
+        TWENTY STORE ADMINISTRATION · PRODUCT INVENTORY
+    </div>
+
+    <!-- Brand Header -->
+    <header class="w-full bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+            <!-- Brand Logo -->
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-coral flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="white" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        class="w-6 h-6">
+                        <path d="M12 7V5.5a2.5 2.5 0 1 1 2.5 2.5"/>
+                        <path d="M12 8L3 14v2h18v-2L12 8Z"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight leading-none">
+                        twenty<span class="text-coral">.</span>
+                    </h1>
+                    <p class="text-[9px] tracking-[3px] uppercase text-gray-500 mt-1">
+                        Admin Portal
+                    </p>
+                </div>
+            </a>
+
+            <!-- Quick Store Links -->
+            <div class="flex items-center gap-6 text-xs font-semibold uppercase tracking-wider">
+                <a href="index.html" class="text-gray-500 hover:text-coral transition">View Storefront</a>
+                <a href="shop.html" class="text-gray-500 hover:text-coral transition">Live Catalog</a>
+                <button type="button" onclick="sessionStorage.removeItem('twentyAdminLoggedIn'); localStorage.removeItem('twentyAdminLoggedIn'); window.location.href='login.html';"
+                    class="border border-dark px-4 py-2 text-[11px] font-bold hover:bg-dark hover:text-white transition">
+                    Sign Out
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Admin Dynamic Layout Container -->
+    <main class="flex-grow w-full">
+        <div id="admin-layout" class="flex min-h-[calc(100vh-115px)]"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5 px-6 text-center text-xs text-gray-400">
+        © 2026 TWENTY — Everyday Fashion. Admin Control Panel.
+    </footer>
+
+    <script src="js/admin-pages.js"></script>
+</body>
+</html>

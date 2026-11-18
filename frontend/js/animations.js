@@ -149,6 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <a href="shop.html" class="block py-1.5 hover:text-coral">Shop</a>
                 <a href="shop.html?category=men" class="block py-1.5 hover:text-coral">Men</a>
                 <a href="shop.html?category=women" class="block py-1.5 hover:text-coral">Women</a>
+                <a href="shop.html?category=accessories" class="block py-1.5 hover:text-coral">Accessories</a>
                 <a href="orders.html" class="block py-1.5 hover:text-coral">My Orders</a>
                 <a href="login.html" class="block py-1.5 hover:text-coral">Account</a>
                 <a href="contact.html" class="block py-1.5 hover:text-coral">Contact Us</a>

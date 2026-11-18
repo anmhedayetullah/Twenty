@@ -1,0 +1,291 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Shopping Cart | TWENTY</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cart.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coral: '#D85A30',
+                        cream: '#F8F5F0',
+                        dark: '#171717'
+                    },
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-sans text-dark bg-white flex flex-col min-h-screen">
+
+    <!-- Announcement -->
+    <div class="bg-dark text-white text-center py-2 text-xs tracking-widest">
+        FREE SHIPPING ON ORDERS OVER ৳3000
+    </div>
+
+    <!-- Navbar -->
+    <header class="w-full bg-white border-b border-gray-100">
+        <nav class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+
+            <!-- Brand Logo -->
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-full bg-coral flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="white" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        class="w-7 h-7">
+                        <path d="M12 7V5.5a2.5 2.5 0 1 1 2.5 2.5"/>
+                        <path d="M12 8L3 14v2h18v-2L12 8Z"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight">
+                        twenty<span class="text-coral">.</span>
+                    </h1>
+                    <p class="text-[9px] tracking-[3px] uppercase text-gray-500">
+                        Everyday Fashion
+                    </p>
+                </div>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-9 text-sm font-medium">
+                <a href="index.html" class="hover:text-coral transition">Home</a>
+                <a href="shop.html" class="hover:text-coral transition">Shop</a>
+                <a href="shop.html?category=men" class="hover:text-coral transition">Men</a>
+                <a href="shop.html?category=women" class="hover:text-coral transition">Women</a>
+                <a href="orders.html" class="hover:text-coral transition">My Orders</a>
+            </div>
+
+            <!-- Navigation Icons -->
+            <div class="flex items-center gap-5">
+                <a href="shop.html" aria-label="Search" class="hover:text-coral">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.7"
+                        class="w-6 h-6">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path d="m16 16 4 4"/>
+                    </svg>
+                </a>
+
+                <a href="login.html" aria-label="Account" class="hover:text-coral">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.7"
+                        class="w-6 h-6">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>
+                    </svg>
+                </a>
+
+                <a href="cart.html" aria-label="Shopping cart" class="relative text-coral">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.7"
+                        class="w-6 h-6">
+                        <path d="M3 3h2l2.5 12h11L21 7H6"/>
+                        <circle cx="9" cy="20" r="1"/>
+                        <circle cx="18" cy="20" r="1"/>
+                    </svg>
+
+                    <span id="cart-count"
+                        class="hidden absolute -top-2 -right-2 bg-coral text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                        0
+                    </span>
+                </a>
+
+                <button id="menu-toggle" class="md:hidden" aria-label="Open menu">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2"
+                        class="w-6 h-6">
+                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+
+        </nav>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-5 space-y-4 text-sm">
+            <a href="index.html" class="block">Home</a>
+            <a href="shop.html" class="block">Shop</a>
+            <a href="shop.html?category=men" class="block">Men</a>
+            <a href="shop.html?category=women" class="block">Women</a>
+            <a href="orders.html" class="block">My Orders</a>
+        </div>
+    </header>
+
+
+    <!-- Breadcrumb -->
+    <div class="max-w-7xl mx-auto px-6 py-6 text-xs text-gray-500">
+        <a href="index.html" class="hover:text-coral">Home</a> /
+        <span class="text-dark">Shopping Cart</span>
+    </div>
+
+
+    <!-- Main -->
+    <main class="max-w-7xl mx-auto px-6 pb-24 flex-grow w-full">
+
+        <div class="mb-10">
+            <p class="text-coral text-xs font-bold tracking-[3px]">
+                YOUR SELECTION
+            </p>
+
+            <h1 class="text-3xl md:text-4xl font-bold mt-3">
+                Shopping Cart
+            </h1>
+
+            <p class="text-sm text-gray-500 mt-3">
+                Review your items before checkout.
+            </p>
+        </div>
+
+
+        <!-- Cart Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+            <!-- Cart Items -->
+            <section class="lg:col-span-2">
+
+                <div class="hidden md:grid grid-cols-12 gap-4 border-b border-gray-200 pb-4 text-xs font-bold tracking-widest text-gray-400">
+                    <div class="col-span-6">PRODUCT</div>
+                    <div class="col-span-2">PRICE</div>
+                    <div class="col-span-2">QUANTITY</div>
+                    <div class="col-span-2 text-right">TOTAL</div>
+                </div>
+
+                <div id="cart-items">
+                    <!-- Products load from JavaScript -->
+                </div>
+
+                <!-- Empty Cart -->
+                <div id="empty-cart" class="hidden text-center py-20">
+
+                    <div class="text-6xl mb-6">🛍️</div>
+
+                    <h2 class="text-2xl font-bold">
+                        Your cart is empty
+                    </h2>
+
+                    <p class="text-sm text-gray-500 mt-3">
+                        Looks like you haven't added anything yet.
+                    </p>
+
+                    <a href="shop.html"
+                        class="inline-block bg-dark text-white px-10 py-4 text-xs font-bold tracking-widest mt-8 hover:bg-coral transition">
+                        CONTINUE SHOPPING
+                    </a>
+
+                </div>
+
+                <div class="mt-8">
+                    <a href="shop.html"
+                        class="text-sm font-semibold border-b border-dark pb-1 hover:text-coral hover:border-coral">
+                        ← Continue Shopping
+                    </a>
+                </div>
+
+            </section>
+
+
+            <!-- Order Summary -->
+            <aside>
+
+                <div class="bg-cream p-6 md:p-8">
+
+                    <h2 class="text-xl font-bold mb-7">
+                        Order Summary
+                    </h2>
+
+                    <div class="flex justify-between text-sm mb-5">
+                        <span class="text-gray-500">Subtotal</span>
+                        <span id="cart-subtotal" class="font-semibold">৳0</span>
+                    </div>
+
+                    <div class="flex justify-between text-sm mb-5">
+                        <span class="text-gray-500">Delivery Charge</span>
+                        <span id="delivery-charge" class="font-semibold">৳0</span>
+                    </div>
+
+                    <p id="shipping-message" class="text-xs text-green-700 mb-5">
+                        Add products to see delivery information.
+                    </p>
+
+                    <div class="border-t border-gray-300 pt-5 flex justify-between items-center">
+                        <span class="font-bold">Total</span>
+
+                        <span id="cart-total" class="text-2xl font-bold text-coral">
+                            ৳0
+                        </span>
+                    </div>
+
+                    <button id="checkout-button"
+                        class="w-full bg-dark text-white py-4 text-xs font-bold tracking-widest mt-8 hover:bg-coral transition">
+                        PROCEED TO CHECKOUT →
+                    </button>
+
+                    <p class="text-center text-xs text-gray-500 mt-5">
+                        Secure and convenient shopping experience.
+                    </p>
+
+                </div>
+
+                <!-- Payment Info -->
+                <div class="border border-gray-200 p-6 mt-5">
+
+                    <h3 class="font-bold text-sm mb-3">
+                        Payment Information
+                    </h3>
+
+                    <p class="text-xs text-gray-500 leading-6">
+                        Cash on Delivery will be available at checkout.
+                        Payment instructions will be provided with your order.
+                    </p>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-12 text-center">
+
+        <h2 class="text-3xl font-bold">
+            twenty<span class="text-coral">.</span>
+        </h2>
+
+        <p class="text-gray-400 text-xs tracking-widest mt-3">
+            EVERYDAY FASHION
+        </p>
+
+        <p class="text-gray-500 text-xs mt-8">
+            © 2026 TWENTY. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <script src="js/cart.js"></script>
+    <script src="js/animations.js"></script>
+</body>
+</html>

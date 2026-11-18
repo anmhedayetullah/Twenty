@@ -1,0 +1,479 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Shop All Products | TWENTY</title>
+
+    <meta name="description" content="Explore the latest clothing collection at TWENTY Everyday Fashion.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coral: '#D85A30',
+                        cream: '#F8F5F0',
+                        dark: '#171717'
+                    },
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-sans bg-white text-dark">
+
+    <!-- Announcement -->
+    <div class="bg-dark text-white text-center py-2 text-xs tracking-widest">
+        FREE SHIPPING ON ORDERS OVER ৳3000
+    </div>
+
+    <!-- Navbar -->
+    <header class="bg-white border-b border-gray-100">
+
+        <nav class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+
+            <!-- Logo -->
+            <a href="index.html" class="flex items-center gap-3">
+
+                <div class="w-11 h-11 rounded-full bg-coral flex items-center justify-center">
+
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="white" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        class="w-7 h-7">
+
+                        <path d="M12 7V5.5a2.5 2.5 0 1 1 2.5 2.5"/>
+                        <path d="M12 8L3 14v2h18v-2L12 8Z"/>
+
+                    </svg>
+
+                </div>
+
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight">
+                        twenty<span class="text-coral">.</span>
+                    </h1>
+
+                    <p class="text-[9px] tracking-[3px] uppercase text-gray-500">
+                        Everyday Fashion
+                    </p>
+                </div>
+
+            </a>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center gap-9 text-sm font-medium">
+
+                <a href="index.html" class="hover:text-coral">Home</a>
+                <a href="shop.html" class="text-coral">Shop</a>
+                <a href="shop.html?category=men" class="hover:text-coral">Men</a>
+                <a href="shop.html?category=women" class="hover:text-coral">Women</a>
+                <a href="index.html#collections" class="hover:text-coral">Collections</a>
+
+            </div>
+
+            <!-- Icons -->
+            <div class="flex items-center gap-5">
+
+                <a href="login.html" aria-label="Account">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.7"
+                        class="w-6 h-6">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>
+                    </svg>
+                </a>
+
+                <a href="cart.html" aria-label="Cart" class="relative">
+
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.7"
+                        class="w-6 h-6">
+                        <path d="M3 3h2l2.5 12h11L21 7H6"/>
+                        <circle cx="9" cy="20" r="1"/>
+                        <circle cx="18" cy="20" r="1"/>
+                    </svg>
+
+                    <span id="cart-count"
+                        class="absolute -top-2 -right-2 bg-coral text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                        0
+                    </span>
+
+                </a>
+
+                <button id="shop-menu-toggle" class="md:hidden" aria-label="Open menu">
+                    ☰
+                </button>
+
+            </div>
+
+        </nav>
+
+        <div id="shop-mobile-menu" class="hidden md:hidden px-6 pb-5 space-y-4 text-sm">
+            <a href="index.html" class="block">Home</a>
+            <a href="shop.html" class="block">Shop</a>
+            <a href="shop.html?category=men" class="block">Men</a>
+            <a href="shop.html?category=women" class="block">Women</a>
+        </div>
+
+    </header>
+
+
+    <!-- Shop Heading -->
+    <section class="bg-cream py-14 text-center">
+
+        <p class="text-coral text-xs tracking-[4px] font-bold mb-4">
+            DISCOVER YOUR STYLE
+        </p>
+
+        <h2 class="text-4xl md:text-5xl font-bold">
+            Shop All Products
+        </h2>
+
+        <p class="text-gray-500 text-sm mt-4">
+            Everyday essentials. Timeless fashion.
+        </p>
+
+    </section>
+
+
+    <!-- Shop Main -->
+    <main class="max-w-7xl mx-auto px-6 py-14">
+
+        <!-- Top Bar -->
+        <div class="flex flex-col md:flex-row justify-between gap-5 mb-10">
+
+            <div>
+                <h2 class="text-xl font-bold">Our Collection</h2>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    <span id="product-count">0</span> products found
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+
+                <!-- Search -->
+                <input
+                    type="search"
+                    id="product-search"
+                    placeholder="Search products..."
+                    class="border border-gray-300 px-4 py-3 text-sm outline-none focus:border-coral w-full sm:w-64"
+                >
+
+                <!-- Sort -->
+                <select id="sort-products"
+                    class="border border-gray-300 px-4 py-3 text-sm outline-none focus:border-coral">
+
+                    <option value="default">Sort By: Default</option>
+                    <option value="low-high">Price: Low to High</option>
+                    <option value="high-low">Price: High to Low</option>
+                    <option value="name">Name: A to Z</option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- Products Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-10">
+
+
+            <!-- FILTER SIDEBAR -->
+            <aside class="space-y-8">
+
+                <!-- Category -->
+                <div>
+
+                    <h3 class="font-bold text-base mb-5">
+                        Categories
+                    </h3>
+
+                    <div class="space-y-3 text-sm" id="category-filters">
+
+                        <label class="flex items-center gap-3">
+                            <input type="radio" name="category" value="all" checked>
+                            All Products
+                        </label>
+
+                        <label class="flex items-center gap-3">
+                            <input type="radio" name="category" value="Men">
+                            Men's Clothing
+                        </label>
+
+                        <label class="flex items-center gap-3">
+                            <input type="radio" name="category" value="Women">
+                            Women's Clothing
+                        </label>
+
+                        <label class="flex items-center gap-3">
+                            <input type="radio" name="category" value="T-Shirts">
+                            T-Shirts
+                        </label>
+
+                        <label class="flex items-center gap-3">
+                            <input type="radio" name="category" value="Shirts">
+                            Shirts
+                        </label>
+
+                        <label class="flex items-center gap-3">
+                            <input type="radio" name="category" value="Hoodies">
+                            Hoodies
+                        </label>
+
+                        <label class="flex items-center gap-3">
+                            <input type="radio" name="category" value="Pants">
+                            Pants & Jeans
+                        </label>
+
+                        <label class="flex items-center gap-3">
+                            <input type="radio" name="category" value="Accessories">
+                            Accessories
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div class="border-t border-gray-200"></div>
+
+
+                <!-- Price Filter -->
+                <div>
+
+                    <h3 class="font-bold text-base mb-5">
+                        Price Range
+                    </h3>
+
+                    <input
+                        type="range"
+                        id="price-filter"
+                        min="500"
+                        max="5000"
+                        step="100"
+                        value="5000"
+                        class="w-full accent-[#D85A30]"
+                    >
+
+                    <div class="flex justify-between text-xs text-gray-500 mt-3">
+
+                        <span>৳500</span>
+
+                        <span id="price-value">
+                            ৳5,000
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="border-t border-gray-200"></div>
+
+
+                <!-- Size Filter -->
+                <div>
+
+                    <h3 class="font-bold text-base mb-5">
+                        Size
+                    </h3>
+
+                    <div class="flex flex-wrap gap-2">
+
+                        <label class="size-option">
+                            <input type="checkbox" name="size" value="S">
+                            <span>S</span>
+                        </label>
+
+                        <label class="size-option">
+                            <input type="checkbox" name="size" value="M">
+                            <span>M</span>
+                        </label>
+
+                        <label class="size-option">
+                            <input type="checkbox" name="size" value="L">
+                            <span>L</span>
+                        </label>
+
+                        <label class="size-option">
+                            <input type="checkbox" name="size" value="XL">
+                            <span>XL</span>
+                        </label>
+
+                        <label class="size-option">
+                            <input type="checkbox" name="size" value="XXL">
+                            <span>XXL</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div class="border-t border-gray-200"></div>
+
+
+                <!-- Color Filter -->
+                <div>
+
+                    <h3 class="font-bold text-base mb-5">
+                        Colors
+                    </h3>
+
+                    <div class="space-y-3 text-sm">
+
+                        <label class="flex items-center gap-3">
+                            <input type="checkbox" name="color" value="Black">
+                            Black
+                        </label>
+
+                        <label class="flex items-center gap-3">
+                            <input type="checkbox" name="color" value="White">
+                            White
+                        </label>
+
+                        <label class="flex items-center gap-3">
+                            <input type="checkbox" name="color" value="Beige">
+                            Beige
+                        </label>
+
+                        <label class="flex items-center gap-3">
+                            <input type="checkbox" name="color" value="Blue">
+                            Blue
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Reset -->
+                <button id="reset-filters"
+                    class="w-full border border-dark py-3 text-xs font-bold tracking-widest hover:bg-dark hover:text-white transition">
+
+                    RESET FILTERS
+
+                </button>
+
+            </aside>
+
+
+            <!-- PRODUCT GRID -->
+            <section>
+
+                <div id="shop-products"
+                    class="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10">
+
+                    <!-- JavaScript will load products here -->
+
+                </div>
+
+                <div id="no-products" class="hidden text-center py-20">
+
+                    <h3 class="text-xl font-bold">
+                        No Products Found
+                    </h3>
+
+                    <p class="text-gray-500 mt-3">
+                        Try changing your search or filters.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-14 pb-8">
+
+        <div class="max-w-7xl mx-auto px-6">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 pb-12">
+
+                <div>
+
+                    <h2 class="text-4xl font-bold">
+                        twenty<span class="text-coral">.</span>
+                    </h2>
+
+                    <p class="text-gray-400 text-sm mt-4">
+                        Everyday fashion. Everyday you.
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <h3 class="font-bold mb-5">Quick Links</h3>
+
+                    <div class="space-y-3 text-sm text-gray-400">
+
+                        <a href="index.html" class="block hover:text-coral">Home</a>
+                        <a href="shop.html" class="block hover:text-coral">Shop</a>
+                        <a href="cart.html" class="block hover:text-coral">Cart</a>
+
+                    </div>
+
+                </div>
+
+                <div>
+
+                    <h3 class="font-bold mb-5">Customer Service</h3>
+
+                    <div class="space-y-3 text-sm text-gray-400">
+
+                        <a href="contact.html" class="block hover:text-coral">Contact Us</a>
+                        <a href="contact.html#shipping" class="block hover:text-coral">Shipping Information</a>
+                        <a href="contact.html#returns" class="block hover:text-coral">Returns & Exchanges</a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="border-t border-gray-700 pt-7 text-center text-xs text-gray-500">
+
+                © 2026 TWENTY — Everyday Fashion.
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- Shop JavaScript -->
+    <script src="js/shop.js"></script>
+
+    <script src="js/animations.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Contact & Customer Service — TWENTY</title>
+
+    <meta name="description" content="Get in touch with TWENTY or view our shipping, returns and privacy policies.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Brand Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coral: '#D85A30',
+                        cream: '#F8F5F0',
+                        dark: '#171717'
+                    },
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-sans bg-white text-dark flex flex-col min-h-screen">
+
+    <!-- Announcement Bar -->
+    <div class="bg-dark text-white text-center py-2 text-xs tracking-widest">
+        FREE SHIPPING ON ORDERS OVER ৳3000
+    </div>
+
+    <!-- Navigation -->
+    <header class="w-full bg-white border-b border-gray-100">
+
+        <nav class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+
+            <!-- Brand Logo -->
+            <a href="index.html" class="flex items-center gap-3">
+
+                <div class="w-11 h-11 rounded-full bg-coral flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="white" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        class="w-7 h-7">
+                        <path d="M12 7V5.5a2.5 2.5 0 1 1 2.5 2.5"/>
+                        <path d="M12 8L3 14v2h18v-2L12 8Z"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight">
+                        twenty<span class="text-coral">.</span>
+                    </h1>
+                    <p class="text-[9px] tracking-[3px] uppercase text-gray-500">
+                        Everyday Fashion
+                    </p>
+                </div>
+
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-9 text-sm font-medium">
+                <a href="index.html" class="hover:text-coral transition">Home</a>
+                <a href="shop.html" class="hover:text-coral transition">Shop</a>
+                <a href="shop.html?category=men" class="hover:text-coral transition">Men</a>
+                <a href="shop.html?category=women" class="hover:text-coral transition">Women</a>
+                <a href="orders.html" class="hover:text-coral transition">My Orders</a>
+            </div>
+
+            <!-- Navigation Icons -->
+            <div class="flex items-center gap-5">
+
+                <a href="shop.html" aria-label="Search" class="hover:text-coral">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.7"
+                        class="w-6 h-6">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path d="m16 16 4 4"/>
+                    </svg>
+                </a>
+
+                <a href="login.html" aria-label="Account" class="hover:text-coral">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.7"
+                        class="w-6 h-6">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>
+                    </svg>
+                </a>
+
+                <a href="cart.html" aria-label="Shopping cart" class="relative hover:text-coral">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.7"
+                        class="w-6 h-6">
+                        <path d="M3 3h2l2.5 12h11L21 7H6"/>
+                        <circle cx="9" cy="20" r="1"/>
+                        <circle cx="18" cy="20" r="1"/>
+                    </svg>
+
+                    <span id="cart-count"
+                        class="absolute -top-2 -right-2 bg-coral text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                        0
+                    </span>
+                </a>
+
+                <button id="menu-toggle" class="md:hidden" aria-label="Open menu">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2"
+                        class="w-6 h-6">
+                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+
+            </div>
+
+        </nav>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-5 space-y-4 text-sm">
+            <a href="index.html" class="block">Home</a>
+            <a href="shop.html" class="block">Shop</a>
+            <a href="shop.html?category=men" class="block">Men</a>
+            <a href="shop.html?category=women" class="block">Women</a>
+            <a href="orders.html" class="block">My Orders</a>
+        </div>
+
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+
+        <!-- Page Header -->
+        <div class="bg-cream border-b border-gray-100">
+            <div class="max-w-7xl mx-auto px-6 py-12">
+                <p class="text-coral text-xs tracking-[4px] font-semibold uppercase mb-2">
+                    <a href="index.html" class="hover:underline">Home</a> /
+                    <span>Customer Service</span>
+                </p>
+                <h2 class="text-3xl md:text-5xl font-bold tracking-tight">
+                    Get in Touch<span class="text-coral">.</span>
+                </h2>
+                <p class="text-gray-600 text-sm mt-3 max-w-xl">
+                    Have a question about your order, sizing, or delivery? Send us a message and our team will respond within 24 hours.
+                </p>
+            </div>
+        </div>
+
+        <!-- Contact Form & Store Details -->
+        <section class="max-w-7xl mx-auto px-6 py-16">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+                <!-- Left: Contact Form -->
+                <div class="lg:col-span-7 border border-gray-200 p-8 md:p-10">
+                    <p class="text-coral text-xs tracking-[3px] uppercase font-semibold mb-1">
+                        Send a Message
+                    </p>
+                    <h3 class="text-2xl font-bold mb-6 pb-4 border-b border-gray-100">
+                        Contact Form
+                    </h3>
+
+                    <div id="contact-success" class="hidden bg-green-50 border border-green-200 text-green-800 text-xs font-medium p-4 mb-6">
+                        Thank you for reaching out! We have received your message and will get back to you shortly.
+                    </div>
+
+                    <form id="contact-form" class="space-y-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label for="contact-name" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                                    Your Name <span class="text-coral">*</span>
+                                </label>
+                                <input type="text" id="contact-name" required
+                                    placeholder="Enter your name"
+                                    class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                            </div>
+
+                            <div>
+                                <label for="contact-phone" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                                    Phone / Order ID (Optional)
+                                </label>
+                                <input type="text" id="contact-phone"
+                                    placeholder="01XXXXXXXXX or #TW-1234"
+                                    class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="contact-email" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                                Email Address <span class="text-coral">*</span>
+                            </label>
+                            <input type="email" id="contact-email" required
+                                placeholder="you@example.com"
+                                class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                        </div>
+
+                        <div>
+                            <label for="contact-message" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                                Message <span class="text-coral">*</span>
+                            </label>
+                            <textarea id="contact-message" rows="4" required
+                                placeholder="How can we help you?"
+                                class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral"></textarea>
+                        </div>
+
+                        <button type="submit"
+                            class="bg-coral text-white px-8 py-4 text-sm font-semibold uppercase tracking-wider hover:bg-black transition">
+                            SEND MESSAGE →
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right: Contact Info -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="bg-cream p-8 border border-gray-100 space-y-6">
+                        <div>
+                            <p class="text-coral text-xs tracking-[3px] uppercase font-semibold mb-2">
+                                Customer Support
+                            </p>
+                            <h3 class="text-xl font-bold">
+                                Direct Contact
+                            </h3>
+                        </div>
+
+                        <div class="space-y-4 text-sm">
+                            <div>
+                                <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Phone & WhatsApp</p>
+                                <p class="font-bold text-dark mt-1">+880 1700-000000</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Email</p>
+                                <p class="font-bold text-dark mt-1">support@twentyfashion.com</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Studio Location</p>
+                                <p class="text-gray-700 mt-1">Dhanmondi, Dhaka-1209, Bangladesh</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Support Hours</p>
+                                <p class="text-gray-700 mt-1">Saturday – Thursday: 10:00 AM – 8:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Policies Section (Linked from Footer) -->
+        <section class="bg-cream py-16 border-t border-gray-200">
+            <div class="max-w-5xl mx-auto px-6 space-y-12">
+
+                <!-- Shipping Information -->
+                <div id="shipping" class="bg-white border border-gray-200 p-8">
+                    <p class="text-coral text-xs tracking-[3px] uppercase font-semibold mb-2">
+                        Delivery Policy
+                    </p>
+                    <h3 class="text-2xl font-bold mb-4">
+                        Shipping Information
+                    </h3>
+                    <ul class="space-y-2.5 text-sm text-gray-600 list-disc pl-5">
+                        <li><strong>Inside Dhaka:</strong> Delivery within 24–48 hours. Delivery charge is <strong>৳80</strong>.</li>
+                        <li><strong>Outside Dhaka:</strong> Delivery within 3–5 business days across Bangladesh. Delivery charge is <strong>৳150</strong>.</li>
+                        <li><strong>Free Shipping:</strong> Enjoy <strong>FREE delivery</strong> nationwide on all orders of <strong>৳3,000 or more</strong>.</li>
+                    </ul>
+                </div>
+
+                <!-- Returns & Exchanges -->
+                <div id="returns" class="bg-white border border-gray-200 p-8">
+                    <p class="text-coral text-xs tracking-[3px] uppercase font-semibold mb-2">
+                        Hassle-Free Policy
+                    </p>
+                    <h3 class="text-2xl font-bold mb-4">
+                        Returns & Exchanges
+                    </h3>
+                    <ul class="space-y-2.5 text-sm text-gray-600 list-disc pl-5">
+                        <li>Size exchange or return requests are accepted within <strong>7 days</strong> of receiving your parcel.</li>
+                        <li>Items must be unworn, unwashed, and have all original TWENTY tags intact.</li>
+                        <li>To request an exchange, contact us with your Order ID (e.g., <strong>#TW-1234</strong>).</li>
+                    </ul>
+                </div>
+
+                <!-- Privacy Policy -->
+                <div id="privacy" class="bg-white border border-gray-200 p-8">
+                    <p class="text-coral text-xs tracking-[3px] uppercase font-semibold mb-2">
+                        Data Protection
+                    </p>
+                    <h3 class="text-2xl font-bold mb-4">
+                        Privacy Policy
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        At TWENTY, we respect your privacy. Your name, phone number, email, and delivery address are used strictly to process and deliver your orders and provide customer support. We never sell or share your personal information with third parties.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-16 pb-8">
+
+        <div class="max-w-7xl mx-auto px-6">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 pb-12">
+
+                <div>
+                    <h2 class="text-4xl font-bold">
+                        twenty<span class="text-coral">.</span>
+                    </h2>
+
+                    <p class="text-gray-400 text-sm mt-4">
+                        Everyday fashion. Everyday you.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-5">Quick Links</h3>
+
+                    <div class="space-y-3 text-sm text-gray-400">
+                        <a href="index.html" class="block hover:text-coral">Home</a>
+                        <a href="shop.html" class="block hover:text-coral">Shop</a>
+                        <a href="orders.html" class="block hover:text-coral">My Orders</a>
+                        <a href="cart.html" class="block hover:text-coral">Shopping Cart</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-5">Customer Service</h3>
+
+                    <div class="space-y-3 text-sm text-gray-400">
+                        <a href="contact.html" class="block hover:text-coral">Contact Us</a>
+                        <a href="contact.html#shipping" class="block hover:text-coral">Shipping Information</a>
+                        <a href="contact.html#returns" class="block hover:text-coral">Returns & Exchanges</a>
+                        <a href="contact.html#privacy" class="block hover:text-coral">Privacy Policy</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="border-t border-gray-700 pt-7 text-center text-xs text-gray-500">
+                © 2026 TWENTY — Everyday Fashion. All rights reserved.
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- JavaScript -->
+    <script>
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById("menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+        if (menuToggle && mobileMenu) {
+            menuToggle.addEventListener("click", () => {
+                mobileMenu.classList.toggle("hidden");
+            });
+        }
+
+        // Update Cart Counter
+        const cart = JSON.parse(localStorage.getItem("twentyCart")) || [];
+        const totalItems = cart.reduce((sum, item) => sum + Number(item.quantity), 0);
+        const counter = document.getElementById("cart-count");
+        if (counter) counter.textContent = totalItems;
+
+        // Contact Form Submit
+        document.getElementById("contact-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            document.getElementById("contact-success").classList.remove("hidden");
+            e.target.reset();
+        });
+    </script>
+
+    <script src="js/animations.js"></script>
+</body>
+</html>
+

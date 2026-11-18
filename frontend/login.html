@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Account — TWENTY</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coral: '#D85A30',
+                        cream: '#F8F5F0',
+                        dark: '#171717'
+                    },
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-sans bg-white text-dark flex flex-col min-h-screen">
+
+    <!-- Announcement Bar -->
+    <div class="bg-dark text-white text-center py-2 text-xs tracking-widest">
+        FREE SHIPPING ON ORDERS OVER ৳3000
+    </div>
+
+    <!-- Navigation -->
+    <header class="w-full bg-white border-b border-gray-100">
+        <nav class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+
+            <!-- Brand Logo -->
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-full bg-coral flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="white" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        class="w-7 h-7">
+                        <path d="M12 7V5.5a2.5 2.5 0 1 1 2.5 2.5"/>
+                        <path d="M12 8L3 14v2h18v-2L12 8Z"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight">
+                        twenty<span class="text-coral">.</span>
+                    </h1>
+                    <p class="text-[9px] tracking-[3px] uppercase text-gray-500">
+                        Everyday Fashion
+                    </p>
+                </div>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-9 text-sm font-medium">
+                <a href="index.html" class="hover:text-coral transition">Home</a>
+                <a href="shop.html" class="hover:text-coral transition">Shop</a>
+                <a href="shop.html?category=men" class="hover:text-coral transition">Men</a>
+                <a href="shop.html?category=women" class="hover:text-coral transition">Women</a>
+                <a href="orders.html" class="hover:text-coral transition">My Orders</a>
+            </div>
+
+            <!-- Navigation Icons -->
+            <div class="flex items-center gap-5">
+                <a href="shop.html" aria-label="Search" class="hover:text-coral">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.7"
+                        class="w-6 h-6">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path d="m16 16 4 4"/>
+                    </svg>
+                </a>
+
+                <a href="login.html" aria-label="Account" class="text-coral">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.7"
+                        class="w-6 h-6">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>
+                    </svg>
+                </a>
+
+                <a href="cart.html" aria-label="Shopping cart" class="relative hover:text-coral">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.7"
+                        class="w-6 h-6">
+                        <path d="M3 3h2l2.5 12h11L21 7H6"/>
+                        <circle cx="9" cy="20" r="1"/>
+                        <circle cx="18" cy="20" r="1"/>
+                    </svg>
+
+                    <span id="cart-count"
+                        class="hidden absolute -top-2 -right-2 bg-coral text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                        0
+                    </span>
+                </a>
+
+                <button id="menu-toggle" class="md:hidden" aria-label="Open menu">
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2"
+                        class="w-6 h-6">
+                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+
+        </nav>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-5 space-y-4 text-sm">
+            <a href="index.html" class="block">Home</a>
+            <a href="shop.html" class="block">Shop</a>
+            <a href="shop.html?category=men" class="block">Men</a>
+            <a href="shop.html?category=women" class="block">Women</a>
+            <a href="orders.html" class="block">My Orders</a>
+        </div>
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="flex-grow bg-cream py-12 md:py-16 px-6 flex items-center justify-center">
+
+        <!-- ==========================================
+             LOGGED-IN MEMBER DASHBOARD VIEW
+        ========================================== -->
+        <div id="profile-view" class="hidden max-w-5xl w-full space-y-6">
+
+            <!-- Top Profile Banner & Stats -->
+            <div class="bg-white border border-gray-200 p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="flex items-center gap-5">
+                    <div id="profile-avatar"
+                        class="w-16 h-16 rounded-full bg-dark text-white text-2xl font-bold flex items-center justify-center flex-shrink-0">
+                        H
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <p class="text-coral text-[11px] tracking-[3px] uppercase font-bold">
+                                TWENTY Member
+                            </p>
+                            <span class="bg-green-50 text-green-700 border border-green-200 text-[10px] font-bold px-2.5 py-0.5 uppercase tracking-wider">
+                                ✓ Verified Gmail
+                            </span>
+                        </div>
+                        <h2 id="profile-name" class="text-2xl md:text-3xl font-bold tracking-tight mt-1">
+                            Welcome
+                        </h2>
+                        <p id="profile-email" class="text-sm text-gray-500 mt-0.5"></p>
+                    </div>
+                </div>
+
+                <!-- Quick Account Stats -->
+                <div class="grid grid-cols-3 gap-4 border-t md:border-t-0 md:border-l border-gray-200 pt-4 md:pt-0 md:pl-8 text-center">
+                    <div>
+                        <p id="stat-orders" class="text-xl md:text-2xl font-bold text-dark">0</p>
+                        <p class="text-[11px] uppercase tracking-wider text-gray-500 mt-0.5">Orders</p>
+                    </div>
+                    <div>
+                        <p id="stat-spent" class="text-xl md:text-2xl font-bold text-coral">৳0</p>
+                        <p class="text-[11px] uppercase tracking-wider text-gray-500 mt-0.5">Total Spent</p>
+                    </div>
+                    <div>
+                        <p id="stat-cart" class="text-xl md:text-2xl font-bold text-dark">0</p>
+                        <p class="text-[11px] uppercase tracking-wider text-gray-500 mt-0.5">In Cart</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main 2-Column Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Left Column: Delivery Profile & Contact Info -->
+                <div class="lg:col-span-2 bg-white border border-gray-200 p-6 md:p-8">
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold">Personal & Delivery Information</h3>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Saved details auto-fill during Cash on Delivery checkout.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div id="profile-save-msg"
+                        class="hidden bg-green-50 text-green-700 border border-green-200 text-xs py-3 px-4 mb-5 font-medium">
+                        Delivery profile updated successfully!
+                    </div>
+<form id="profile-details-form" class="space-y-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label for="edit-name" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                                    Full Name
+                                </label>
+                                <input type="text" id="edit-name" required
+                                    class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                            </div>
+
+                            <div>
+                                <label for="edit-phone" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                                    Phone Number
+                                </label>
+                                <input type="tel" id="edit-phone" placeholder="01XXXXXXXXX"
+                                    class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="edit-email" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                                Verified Gmail
+                            </label>
+                            <input type="email" id="edit-email" disabled
+                                class="w-full border border-gray-200 bg-gray-50 text-gray-500 px-4 py-3 text-sm cursor-not-allowed">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label for="edit-region" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                                    Region
+                                </label>
+                                <select id="edit-region"
+                                    class="w-full border border-gray-300 bg-white px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                                    <option value="">Select Region</option>
+                                    <option value="Dhaka">Dhaka</option>
+                                    <option value="Chattogram">Chattogram</option>
+                                    <option value="Rajshahi">Rajshahi</option>
+                                    <option value="Khulna">Khulna</option>
+                                    <option value="Barishal">Barishal</option>
+                                    <option value="Sylhet">Sylhet</option>
+                                    <option value="Rangpur">Rangpur</option>
+                                    <option value="Mymensingh">Mymensingh</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="edit-district" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                                    District
+                                </label>
+                                <select id="edit-district" disabled
+                                    class="w-full border border-gray-300 bg-gray-50 px-4 py-3 text-sm focus:outline-none focus:border-coral disabled:cursor-not-allowed">
+                                    <option value="">Select Region First</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="edit-address" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                                Address
+                            </label>
+                            <textarea id="edit-address" rows="2"
+                                placeholder="House, Road, Area / Upazila"
+                                class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral"></textarea>
+                        </div>
+
+                        <div class="pt-2 flex flex-wrap items-center justify-between gap-4">
+                            <button type="submit"
+                                class="bg-dark text-white px-7 py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-coral transition">
+                                SAVE PROFILE DETAILS
+                            </button>
+
+                            <span class="text-xs text-gray-400">
+                                Payment Method: <strong class="text-dark">Cash on Delivery</strong>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Column: Recent Orders & Quick Actions -->
+                <div class="space-y-6">
+
+                    <!-- Recent Orders Box -->
+                    <div class="bg-white border border-gray-200 p-6">
+                        <div class="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
+                            <h3 class="text-base font-bold">Recent Orders</h3>
+                            <a href="orders.html" class="text-xs font-semibold text-coral hover:underline">
+                                View All →
+                            </a>
+                        </div>
+
+                        <div id="profile-recent-orders" class="space-y-3 text-xs">
+                            <p class="text-gray-400 py-4 text-center">No orders placed yet.</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Navigation & Sign Out -->
+                    <div class="bg-white border border-gray-200 p-6 space-y-3">
+                        <h3 class="text-base font-bold mb-3">Quick Actions</h3>
+
+                        <a href="orders.html"
+                            class="block w-full text-center bg-dark text-white py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-coral transition">
+                            TRACK MY ORDERS
+                        </a>
+
+                        <a href="shop.html"
+                            class="block w-full text-center border border-dark text-dark py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-dark hover:text-white transition">
+                            BROWSE COLLECTION
+                        </a>
+
+                        <button id="logout-btn"
+                            class="w-full border border-red-200 text-red-600 py-3 text-xs font-bold uppercase tracking-widest hover:bg-red-600 hover:text-white transition mt-2">
+                            SIGN OUT
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==========================================
+             AUTH FORMS VIEW (SIGN IN / REGISTER / RESET)
+        ========================================== -->
+        <div id="auth-view" class="max-w-md w-full bg-white border border-gray-200 p-8 md:p-10">
+
+            <div class="text-center mb-7">
+                <p class="text-coral text-xs tracking-[4px] uppercase font-semibold mb-2">
+                    WELCOME TO TWENTY
+                </p>
+                <h2 id="auth-heading" class="text-3xl font-bold tracking-tight">
+                    Sign In<span class="text-coral">.</span>
+                </h2>
+            </div>
+
+            <!-- Tabs -->
+            <div id="auth-tabs" class="grid grid-cols-2 border-b border-gray-200 mb-6 text-sm font-semibold">
+                <button type="button" id="tab-signin"
+                    class="py-3 border-b-2 border-coral text-coral transition">
+                    Sign In
+                </button>
+                <button type="button" id="tab-signup"
+                    class="py-3 border-b-2 border-transparent text-gray-400 hover:text-dark transition">
+                    Create Account
+                </button>
+            </div>
+
+            <!-- Status Alert -->
+            <div id="auth-alert" class="hidden text-xs py-3 px-4 mb-5 font-medium"></div>
+
+            <!-- 1. SIGN IN FORM -->
+            <form id="signin-form" class="space-y-5">
+                <div>
+                    <label for="signin-email" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                        Gmail or Username
+                    </label>
+                    <input type="text" id="signin-email" required
+                        placeholder="yourname@gmail.com"
+                        class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label for="signin-password" class="block text-xs uppercase tracking-wider font-semibold">
+                            Password
+                        </label>
+                        <button type="button" id="open-forgot-btn"
+                            class="text-xs text-coral hover:underline font-medium">
+                            Forgot Password?
+                        </button>
+                    </div>
+                    <input type="password" id="signin-password" required
+                        placeholder="••••••••"
+                        class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                </div>
+
+                <button type="submit" id="signin-submit-btn"
+                    class="w-full bg-coral text-white py-4 text-xs font-bold uppercase tracking-widest hover:bg-black transition">
+                    SIGN IN →
+                </button>
+            </form>
+
+            <!-- 2. CREATE ACCOUNT FORM (Gmail + OTP Verification) -->
+            <form id="signup-form" class="hidden space-y-5">
+                <div>
+                    <label for="signup-name" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                        Full Name
+                    </label>
+                    <input type="text" id="signup-name" required
+                        placeholder="Enter your full name"
+                        class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                </div>
+
+                <div>
+                    <label for="signup-email" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                        Gmail Address
+                    </label>
+                    <input type="email" id="signup-email" required
+                        placeholder="yourname@gmail.com"
+                        class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                </div>
+
+                <div>
+                    <label for="signup-password" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                        Create Password
+                    </label>
+                    <input type="password" id="signup-password" required minlength="6"
+                        placeholder="Minimum 6 characters"
+                        class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                </div>
+
+                <!-- OTP Step -->
+                <div id="signup-otp-box" class="hidden bg-cream p-4 border border-gray-200 space-y-3">
+                    <label for="signup-otp" class="block text-xs uppercase tracking-wider font-bold text-coral">
+                        Enter 6-Digit Code Sent to Gmail
+                    </label>
+                    <input type="text" id="signup-otp" maxlength="6"
+                        placeholder="123456"
+                        class="w-full border border-gray-300 bg-white px-4 py-3 text-center text-lg font-bold tracking-[6px] focus:outline-none focus:border-coral">
+                    <button type="button" id="verify-signup-btn"
+                        class="w-full bg-dark text-white py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-coral transition">
+                        VERIFY & CREATE ACCOUNT →
+                    </button>
+                </div>
+
+                <button type="submit" id="send-signup-otp-btn"
+                    class="w-full bg-coral text-white py-4 text-xs font-bold uppercase tracking-widest hover:bg-black transition">
+                    SEND VERIFICATION CODE TO GMAIL →
+                </button>
+            </form>
+
+            <!-- 3. FORGOT PASSWORD FORM -->
+            <form id="forgot-form" class="hidden space-y-5">
+                <div>
+                    <label for="forgot-email" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                        Registered Gmail Address
+                    </label>
+                    <input type="email" id="forgot-email" required
+                        placeholder="yourname@gmail.com"
+                        class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                </div>
+
+                <div id="forgot-reset-box" class="hidden bg-cream p-4 border border-gray-200 space-y-4">
+                    <div>
+                        <label for="forgot-otp" class="block text-xs uppercase tracking-wider font-bold text-coral mb-2">
+                            6-Digit Reset Code
+                        </label>
+                        <input type="text" id="forgot-otp" maxlength="6"
+                            placeholder="123456"
+                            class="w-full border border-gray-300 bg-white px-4 py-3 text-center text-lg font-bold tracking-[6px] focus:outline-none focus:border-coral">
+                    </div>
+
+                    <div>
+                        <label for="forgot-new-password" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                            New Password
+                        </label>
+                        <input type="password" id="forgot-new-password" minlength="6"
+                            placeholder="Enter new password"
+                            class="w-full border border-gray-300 bg-white px-4 py-3 text-sm focus:outline-none focus:border-coral">
+                    </div>
+
+                    <button type="button" id="confirm-reset-btn"
+                        class="w-full bg-dark text-white py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-coral transition">
+                        RESET PASSWORD →
+                    </button>
+                </div>
+
+                <button type="submit" id="send-forgot-otp-btn"
+                    class="w-full bg-coral text-white py-4 text-xs font-bold uppercase tracking-widest hover:bg-black transition">
+                    SEND RESET CODE TO GMAIL →
+                </button>
+
+                <button type="button" id="back-to-signin-btn"
+                    class="w-full text-xs text-gray-500 underline hover:text-dark">
+                    ← Back to Sign In
+                </button>
+            </form>
+
+        </div>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-12 text-center">
+        <h2 class="text-3xl font-bold">
+            twenty<span class="text-coral">.</span>
+        </h2>
+        <p class="text-gray-400 text-xs tracking-widest mt-3">
+            EVERYDAY FASHION
+        </p>
+        <p class="text-gray-500 text-xs mt-8">
+            © 2026 TWENTY. All rights reserved.
+        </p>
+    </footer>
+
+
+    <script src="js/auth.js"></script>
+    <script src="js/animations.js"></script>
+
+</body>
+</html>

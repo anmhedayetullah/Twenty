@@ -1,110 +1,42 @@
 ﻿const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
 const User = require("../models/User");
 
 const router = express.Router();
 
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
-
-function generateOTP() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-router.post("/send-register-otp", async (req, res) => {
+router.post("/register", async (req, res) => {
     try {
         const { name, email, password } = req.body;
         if (!name || !email || !password) {
-            return res.status(400).json({ message: "Name, Gmail, and password are required." });
+            return res.status(400).json({ message: "Name, email, and password are required." });
         }
 
         const cleanEmail = email.trim().toLowerCase();
-        let user = await User.findOne({ email: cleanEmail });
-
-        if (user && user.isVerified) {
-            return res.status(400).json({ message: "This Gmail is already registered. Please sign in." });
+        if (password.length < 6) {
+            return res.status(400).json({ message: "Password must be at least 6 characters." });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const otp = generateOTP();
-        const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
-
-        if (user) {
-            user.name = name.trim();
-            user.password = hashedPassword;
-            user.otpCode = otp;
-            user.otpExpires = otpExpires;
-            await user.save();
-        } else {
-            user = await User.create({
-                name: name.trim(),
-                email: cleanEmail,
-                password: hashedPassword,
-                isVerified: false,
-                otpCode: otp,
-                otpExpires
-            });
+        const existingUser = await User.findOne({ email: cleanEmail });
+        if (existingUser) {
+            return res.status(400).json({ message: "This email is already registered. Please sign in." });
         }
 
-        await transporter.sendMail({
-            from: `"TWENTY Fashion" <${process.env.EMAIL_USER}>`,
-            to: cleanEmail,
-            subject: "TWENTY Account Verification Code",
-            html: `
-                <div style="font-family:sans-serif;padding:24px;border:1px solid #eee;max-width:480px;">
-                    <h2 style="margin:0 0 8px;">twenty<span style="color:#D85A30;">.</span></h2>
-                    <p>Hello <strong>${user.name}</strong>,</p>
-                    <p>Your account verification code is:</p>
-                    <div style="font-size:28px;font-weight:700;letter-spacing:6px;color:#D85A30;padding:12px 0;">
-                        ${otp}
-                    </div>
-                    <p style="font-size:12px;color:#666;">This code will expire in 5 minutes.</p>
-                </div>
-            `
+        const user = await User.create({
+            name: name.trim(),
+            email: cleanEmail,
+            password: await bcrypt.hash(password, 10)
         });
 
-        res.json({ message: "Verification code sent to your Gmail!" });
+        const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        res.status(201).json({
+            message: "Account created successfully!",
+            token,
+            user: { id: user._id, name: user.name, email: user.email, role: user.role }
+        });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Failed to send verification email. Check EMAIL_USER and EMAIL_PASS in .env." });
-    }
-});
-
-router.post("/verify-register", async (req, res) => {
-    try {
-        const { email, otp } = req.body;
-        const cleanEmail = (email || "").trim().toLowerCase();
-
-        const user = await User.findOne({ email: cleanEmail });
-        if (!user) {
-            return res.status(404).json({ message: "Account request not found." });
-        }
-
-        if (user.otpCode !== String(otp).trim() || new Date() > user.otpExpires) {
-            return res.status(400).json({ message: "Invalid or expired OTP code." });
-        }
-
-        user.isVerified = true;
-        user.otpCode = "";
-        user.otpExpires = null;
-        await user.save();
-
-        const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
-
-        res.json({
-            message: "Account verified and created successfully!",
-            token,
-            user: { id: user._id, name: user.name, email: user.email }
-        });
-    } catch (err) {
-        res.status(500).json({ message: "Server error during verification." });
+        res.status(500).json({ message: "Failed to create account." });
     }
 });
 
@@ -113,83 +45,123 @@ router.post("/login", async (req, res) => {
         const { email, password } = req.body;
         const cleanEmail = (email || "").trim().toLowerCase();
 
-        const user = await User.findOne({ email: cleanEmail, isVerified: true });
+        const user = await User.findOne({ email: cleanEmail });
         if (!user) {
-            return res.status(400).json({ message: "Invalid Gmail or password." });
+            return res.status(400).json({ message: "Invalid email or password." });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid Gmail or password." });
+            return res.status(400).json({ message: "Invalid email or password." });
         }
 
-        const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         res.json({
             message: "Signed in successfully!",
             token,
-            user: { id: user._id, name: user.name, email: user.email }
+            user: { id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, region: user.region, district: user.district, address: user.address }
         });
     } catch (err) {
         res.status(500).json({ message: "Server error during sign in." });
     }
 });
 
-router.post("/forgot-password", async (req, res) => {
+router.post("/reset-password", async (req, res) => {
     try {
-        const cleanEmail = (req.body.email || "").trim().toLowerCase();
-        const user = await User.findOne({ email: cleanEmail, isVerified: true });
-
-        if (!user) {
-            return res.status(404).json({ message: "No verified account found with this Gmail." });
+        const { email, newPassword } = req.body;
+        const cleanEmail = (email || "").trim().toLowerCase();
+        if (!cleanEmail || !newPassword || newPassword.length < 6) {
+            return res.status(400).json({ message: "Email and a 6-character password are required." });
         }
-
-        const otp = generateOTP();
-        user.otpCode = otp;
-        user.otpExpires = new Date(Date.now() + 5 * 60 * 1000);
+        const user = await User.findOne({ email: cleanEmail });
+        if (!user) {
+            return res.status(404).json({ message: "No account found with this email." });
+        }
+        user.password = await bcrypt.hash(newPassword, 10);
         await user.save();
-
-        await transporter.sendMail({
-            from: `"TWENTY Fashion" <${process.env.EMAIL_USER}>`,
-            to: cleanEmail,
-            subject: "TWENTY Password Reset Code",
-            html: `
-                <div style="font-family:sans-serif;padding:24px;border:1px solid #eee;max-width:480px;">
-                    <h2 style="margin:0 0 8px;">twenty<span style="color:#D85A30;">.</span></h2>
-                    <p>Hello <strong>${user.name}</strong>,</p>
-                    <p>Use this code to reset your TWENTY password:</p>
-                    <div style="font-size:28px;font-weight:700;letter-spacing:6px;color:#D85A30;padding:12px 0;">
-                        ${otp}
-                    </div>
-                    <p style="font-size:12px;color:#666;">This code expires in 5 minutes.</p>
-                </div>
-            `
-        });
-
-        res.json({ message: "Password reset code sent to your Gmail!" });
+        res.json({ message: "Password updated successfully. You can now sign in." });
     } catch (err) {
-        res.status(500).json({ message: "Failed to send reset email." });
+        res.status(500).json({ message: "Failed to reset password." });
     }
 });
 
-router.post("/reset-password", async (req, res) => {
+router.get("/me", async (req, res) => {
     try {
-        const { email, otp, newPassword } = req.body;
-        const cleanEmail = (email || "").trim().toLowerCase();
+        const authorization = req.headers.authorization || "";
+        const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+        if (!token) return res.status(401).json({ message: "Authentication required." });
 
-        const user = await User.findOne({ email: cleanEmail, isVerified: true });
-        if (!user || user.otpCode !== String(otp).trim() || new Date() > user.otpExpires) {
-            return res.status(400).json({ message: "Invalid or expired reset code." });
-        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id).select("-password");
+        if (!user) return res.status(404).json({ message: "User not found." });
+        res.json(user);
+    } catch (error) {
+        res.status(401).json({ message: "Invalid or expired session." });
+    }
+});
 
-        user.password = await bcrypt.hash(newPassword, 10);
-        user.otpCode = "";
-        user.otpExpires = null;
-        await user.save();
+router.patch("/profile", async (req, res) => {
+    try {
+        const authorization = req.headers.authorization || "";
+        const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+        if (!token) return res.status(401).json({ message: "Authentication required." });
 
-        res.json({ message: "Password updated successfully! You can now sign in." });
-    } catch (err) {
-        res.status(500).json({ message: "Failed to reset password." });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const allowed = (({ name, phone, region, district, address }) => ({ name, phone, region, district, address }))(req.body);
+        const user = await User.findByIdAndUpdate(decoded.id, allowed, { new: true, runValidators: true }).select("-password");
+        if (!user) return res.status(404).json({ message: "User not found." });
+        res.json(user);
+    } catch (error) {
+        res.status(401).json({ message: "Invalid or expired session." });
+    }
+});
+
+router.get("/admin/users", async (req, res) => {
+    try {
+        const authorization = req.headers.authorization || "";
+        const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+        if (!token) return res.status(401).json({ message: "Admin authentication required." });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded.role !== "admin") return res.status(403).json({ message: "Admin access required." });
+        const users = await User.find().select("-password").sort({ createdAt: -1 });
+        res.json(users);
+    } catch (error) {
+        res.status(401).json({ message: "Invalid or expired admin session." });
+    }
+});
+
+router.patch("/admin/users/:id", async (req, res) => {
+    try {
+        const authorization = req.headers.authorization || "";
+        const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+        if (!token) return res.status(401).json({ message: "Admin authentication required." });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded.role !== "admin") return res.status(403).json({ message: "Admin access required." });
+
+        const allowed = (({ name, phone, region, district, address }) => ({ name, phone, region, district, address }))(req.body);
+        const user = await User.findByIdAndUpdate(req.params.id, allowed, { new: true, runValidators: true }).select("-password");
+        if (!user) return res.status(404).json({ message: "User not found." });
+        res.json(user);
+    } catch (error) {
+        res.status(400).json({ message: "Could not update user." });
+    }
+});
+
+router.delete("/admin/users/:id", async (req, res) => {
+    try {
+        const authorization = req.headers.authorization || "";
+        const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+        if (!token) return res.status(401).json({ message: "Admin authentication required." });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded.role !== "admin") return res.status(403).json({ message: "Admin access required." });
+        if (decoded.id === req.params.id) return res.status(400).json({ message: "You cannot delete the signed-in admin." });
+
+        const user = await User.findByIdAndDelete(req.params.id);
+        if (!user) return res.status(404).json({ message: "User not found." });
+        res.json({ message: "User deleted successfully." });
+    } catch (error) {
+        res.status(400).json({ message: "Could not delete user." });
     }
 });
 

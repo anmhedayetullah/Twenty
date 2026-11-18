@@ -149,7 +149,7 @@ document.getElementById("checkout-form").addEventListener("submit", async (e) =>
     };
 
     try {
-        const response = await fetch("http://localhost:5000/api/orders", {
+        const response = await fetch("https://twenty-topaz-six.vercel.app/api/orders", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newOrder)

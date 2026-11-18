@@ -2,7 +2,7 @@
    TWENTY — ACCOUNT AUTHENTICATION & MEMBER DASHBOARD
 ========================================== */
 
-const API_BASE = "http://localhost:5000/api/auth";
+const API_BASE = "https://twenty-topaz-six.vercel.app/api/auth";
 
 // 1. MOBILE MENU & CART COUNT
 document.getElementById("menu-toggle")?.addEventListener("click", () => {
@@ -170,7 +170,7 @@ async function renderAccountState() {
         const userEmail = currentUser.email.toLowerCase();
         let myOrders = [];
         try {
-            const response = await fetch(`http://localhost:5000/api/orders?email=${encodeURIComponent(userEmail)}`);
+            const response = await fetch(`https://twenty-topaz-six.vercel.app/api/orders?email=${encodeURIComponent(userEmail)}`);
             if (response.ok) myOrders = await response.json();
         } catch (error) {
             myOrders = (JSON.parse(localStorage.getItem("twentyOrders")) || [])
@@ -264,7 +264,7 @@ document.getElementById("profile-details-form").addEventListener("submit", async
     const token = localStorage.getItem("twentyAuthToken");
     if (token) {
         try {
-            await fetch("http://localhost:5000/api/auth/profile", {
+            await fetch("https://twenty-topaz-six.vercel.app/api/auth/profile", {
                 method: "PATCH",
                 headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
                 body: JSON.stringify(currentUser)

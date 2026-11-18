@@ -2,7 +2,7 @@
    TWENTY — ADMIN DASHBOARD FUNCTIONALITY
 ========================================== */
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://twenty-topaz-six.vercel.app/api";
 let dashboardOrders = [];
 
 // 1. MOBILE MENU TOGGLE

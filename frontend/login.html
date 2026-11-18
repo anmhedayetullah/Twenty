@@ -153,7 +153,7 @@
                                 TWENTY Member
                             </p>
                             <span class="bg-green-50 text-green-700 border border-green-200 text-[10px] font-bold px-2.5 py-0.5 uppercase tracking-wider">
-                                ✓ Verified Gmail
+                                Account
                             </span>
                         </div>
                         <h2 id="profile-name" class="text-2xl md:text-3xl font-bold tracking-tight mt-1">
@@ -219,7 +219,7 @@
 
                         <div>
                             <label for="edit-email" class="block text-xs uppercase tracking-wider font-semibold mb-2">
-                                Verified Gmail
+                                TWENTY Account
                             </label>
                             <input type="email" id="edit-email" disabled
                                 class="w-full border border-gray-200 bg-gray-50 text-gray-500 px-4 py-3 text-sm cursor-not-allowed">
@@ -294,6 +294,16 @@
                         </div>
                     </div>
 
+                    <!-- Payment History -->
+                    <div class="bg-white border border-gray-200 p-6">
+                        <div class="border-b border-gray-100 pb-3 mb-4">
+                            <h3 class="text-base font-bold">Payment History</h3>
+                        </div>
+                        <div id="profile-payment-history" class="space-y-3 text-xs">
+                            <p class="text-gray-400 py-4 text-center">No payments recorded.</p>
+                        </div>
+                    </div>
+
                     <!-- Quick Navigation & Sign Out -->
                     <div class="bg-white border border-gray-200 p-6 space-y-3">
                         <h3 class="text-base font-bold mb-3">Quick Actions</h3>
@@ -354,7 +364,7 @@
             <form id="signin-form" class="space-y-5">
                 <div>
                     <label for="signin-email" class="block text-xs uppercase tracking-wider font-semibold mb-2">
-                        Gmail or Username
+                        Email or Username
                     </label>
                     <input type="text" id="signin-email" required
                         placeholder="yourname@gmail.com"
@@ -382,7 +392,7 @@
                 </button>
             </form>
 
-            <!-- 2. CREATE ACCOUNT FORM (Gmail + OTP Verification) -->
+            <!-- 2. CREATE ACCOUNT FORM -->
             <form id="signup-form" class="hidden space-y-5">
                 <div>
                     <label for="signup-name" class="block text-xs uppercase tracking-wider font-semibold mb-2">
@@ -395,7 +405,7 @@
 
                 <div>
                     <label for="signup-email" class="block text-xs uppercase tracking-wider font-semibold mb-2">
-                        Gmail Address
+                        Email Address
                     </label>
                     <input type="email" id="signup-email" required
                         placeholder="yourname@gmail.com"
@@ -411,23 +421,9 @@
                         class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
                 </div>
 
-                <!-- OTP Step -->
-                <div id="signup-otp-box" class="hidden bg-cream p-4 border border-gray-200 space-y-3">
-                    <label for="signup-otp" class="block text-xs uppercase tracking-wider font-bold text-coral">
-                        Enter 6-Digit Code Sent to Gmail
-                    </label>
-                    <input type="text" id="signup-otp" maxlength="6"
-                        placeholder="123456"
-                        class="w-full border border-gray-300 bg-white px-4 py-3 text-center text-lg font-bold tracking-[6px] focus:outline-none focus:border-coral">
-                    <button type="button" id="verify-signup-btn"
-                        class="w-full bg-dark text-white py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-coral transition">
-                        VERIFY & CREATE ACCOUNT →
-                    </button>
-                </div>
-
-                <button type="submit" id="send-signup-otp-btn"
+                <button type="submit" id="create-account-btn"
                     class="w-full bg-coral text-white py-4 text-xs font-bold uppercase tracking-widest hover:bg-black transition">
-                    SEND VERIFICATION CODE TO GMAIL →
+                    CREATE ACCOUNT →
                 </button>
             </form>
 
@@ -435,41 +431,25 @@
             <form id="forgot-form" class="hidden space-y-5">
                 <div>
                     <label for="forgot-email" class="block text-xs uppercase tracking-wider font-semibold mb-2">
-                        Registered Gmail Address
+                        Registered Email Address
                     </label>
                     <input type="email" id="forgot-email" required
                         placeholder="yourname@gmail.com"
                         class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
                 </div>
 
-                <div id="forgot-reset-box" class="hidden bg-cream p-4 border border-gray-200 space-y-4">
-                    <div>
-                        <label for="forgot-otp" class="block text-xs uppercase tracking-wider font-bold text-coral mb-2">
-                            6-Digit Reset Code
-                        </label>
-                        <input type="text" id="forgot-otp" maxlength="6"
-                            placeholder="123456"
-                            class="w-full border border-gray-300 bg-white px-4 py-3 text-center text-lg font-bold tracking-[6px] focus:outline-none focus:border-coral">
-                    </div>
-
-                    <div>
-                        <label for="forgot-new-password" class="block text-xs uppercase tracking-wider font-semibold mb-2">
-                            New Password
-                        </label>
-                        <input type="password" id="forgot-new-password" minlength="6"
-                            placeholder="Enter new password"
-                            class="w-full border border-gray-300 bg-white px-4 py-3 text-sm focus:outline-none focus:border-coral">
-                    </div>
-
-                    <button type="button" id="confirm-reset-btn"
-                        class="w-full bg-dark text-white py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-coral transition">
-                        RESET PASSWORD →
-                    </button>
+                <div>
+                    <label for="forgot-new-password" class="block text-xs uppercase tracking-wider font-semibold mb-2">
+                        New Password
+                    </label>
+                    <input type="password" id="forgot-new-password" required minlength="6"
+                        placeholder="Enter new password"
+                        class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-coral">
                 </div>
 
-                <button type="submit" id="send-forgot-otp-btn"
+                <button type="submit" id="reset-password-btn"
                     class="w-full bg-coral text-white py-4 text-xs font-bold uppercase tracking-widest hover:bg-black transition">
-                    SEND RESET CODE TO GMAIL →
+                    RESET PASSWORD →
                 </button>
 
                 <button type="button" id="back-to-signin-btn"
@@ -498,6 +478,7 @@
 
 
     <script src="js/auth.js"></script>
+    <script src="js/nav-auth.js"></script>
     <script src="js/animations.js"></script>
 
 </body>

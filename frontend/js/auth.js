@@ -1,10 +1,8 @@
 /* ==========================================
-   TWENTY — REAL GMAIL OTP AUTH & MEMBER DASHBOARD
+   TWENTY — ACCOUNT AUTHENTICATION & MEMBER DASHBOARD
 ========================================== */
 
 const API_BASE = "http://localhost:5000/api/auth";
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "twenty@2026";
 
 // 1. MOBILE MENU & CART COUNT
 document.getElementById("menu-toggle")?.addEventListener("click", () => {
@@ -142,7 +140,7 @@ document.getElementById("edit-region")?.addEventListener("change", (e) => {
     populateDistrictOptions(e.target.value);
 });
 
-function renderAccountState() {
+async function renderAccountState() {
     const currentUser = JSON.parse(localStorage.getItem("twentyCurrentUser"));
     const profileView = document.getElementById("profile-view");
     const authView = document.getElementById("auth-view");
@@ -168,14 +166,20 @@ function renderAccountState() {
 
         document.getElementById("edit-address").value = currentUser.address || "";
 
-        // Compute Member Order Stats & Recent Orders
-        const allOrders = JSON.parse(localStorage.getItem("twentyOrders")) || [];
+        // Load order and payment history
         const userEmail = currentUser.email.toLowerCase();
-        const myOrders = allOrders.filter(o =>
-            (o.customer?.email || o.email || "").toLowerCase() === userEmail
-        );
+        let myOrders = [];
+        try {
+            const response = await fetch(`http://localhost:5000/api/orders?email=${encodeURIComponent(userEmail)}`);
+            if (response.ok) myOrders = await response.json();
+        } catch (error) {
+            myOrders = (JSON.parse(localStorage.getItem("twentyOrders")) || [])
+                .filter(o => (o.customer?.email || o.email || "").toLowerCase() === userEmail);
+        }
 
-        const totalSpent = myOrders.reduce((sum, o) => sum + Number(o.total || o.totalAmount || 0), 0);
+        const totalSpent = myOrders
+            .filter(order => order.status !== "Cancelled")
+            .reduce((sum, order) => sum + Number(order.grandTotal || order.total || order.totalAmount || 0), 0);
         const cartQty = updateCartCount();
 
         document.getElementById("stat-orders").textContent = myOrders.length;
@@ -187,7 +191,7 @@ function renderAccountState() {
         if (myOrders.length === 0) {
             recentContainer.innerHTML = `
                 <div class="text-center py-5 text-gray-400">
-                    <p>No orders placed with this Gmail yet.</p>
+                    <p>No orders placed with this email yet.</p>
                     <a href="shop.html" class="inline-block mt-2 text-coral font-bold underline">Start Shopping</a>
                 </div>
             `;
@@ -195,7 +199,7 @@ function renderAccountState() {
             recentContainer.innerHTML = myOrders.slice(0, 3).map(order => {
                 const oid = order.orderId || order.id || "ORD";
                 const status = order.status || "Pending";
-                const total = Number(order.total || order.totalAmount || 0).toLocaleString("en-BD");
+                const total = Number(order.grandTotal || order.total || order.totalAmount || 0).toLocaleString("en-BD");
                 const dateStr = order.date || new Date(order.createdAt || Date.now()).toLocaleDateString("en-GB");
 
                 let badgeStyle = "bg-yellow-50 text-yellow-700 border-yellow-200";
@@ -217,6 +221,27 @@ function renderAccountState() {
                 `;
             }).join("");
         }
+
+        const paymentContainer = document.getElementById("profile-payment-history");
+        if (paymentContainer) {
+            const payments = myOrders.filter(order => order.status !== "Cancelled");
+            paymentContainer.innerHTML = payments.length === 0
+                ? '<p class="text-gray-400 py-4 text-center">No payments recorded.</p>'
+                : payments.slice(0, 5).map(order => `
+                    <div class="border border-gray-100 bg-cream/60 p-3 flex items-center justify-between gap-3">
+                        <div>
+                            <p class="font-bold text-dark">#${order.orderId || order.id || "ORD"}</p>
+                            <p class="text-[11px] text-gray-500 mt-0.5">
+                                ${order.payment?.method || "Cash on Delivery"}
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-coral">৳${Number(order.grandTotal || order.totalAmount || 0).toLocaleString("en-BD")}</p>
+                            <p class="text-[10px] text-gray-500 uppercase mt-0.5">${order.status || "Pending"}</p>
+                        </div>
+                    </div>
+                `).join("");
+        }
     } else {
         profileView.classList.add("hidden");
         authView.classList.remove("hidden");
@@ -224,7 +249,7 @@ function renderAccountState() {
 }
 
 // Save Updated Delivery Profile Info
-document.getElementById("profile-details-form").addEventListener("submit", (e) => {
+document.getElementById("profile-details-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const currentUser = JSON.parse(localStorage.getItem("twentyCurrentUser")) || {};
 
@@ -236,6 +261,17 @@ document.getElementById("profile-details-form").addEventListener("submit", (e) =
     currentUser.address = document.getElementById("edit-address").value.trim();
 
     localStorage.setItem("twentyCurrentUser", JSON.stringify(currentUser));
+    const token = localStorage.getItem("twentyAuthToken");
+    if (token) {
+        try {
+            await fetch("http://localhost:5000/api/auth/profile", {
+                method: "PATCH",
+                headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+                body: JSON.stringify(currentUser)
+            });
+        } catch (error) {
+        }
+    }
     renderAccountState();
 
     const saveMsg = document.getElementById("profile-save-msg");
@@ -249,7 +285,7 @@ document.getElementById("logout-btn").addEventListener("click", () => {
     renderAccountState();
 });
 
-// 5. CREATE ACCOUNT: STEP 1 — SEND OTP TO GMAIL
+// 5. CREATE ACCOUNT
 signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideAuthAlert();
@@ -257,13 +293,13 @@ signupForm.addEventListener("submit", async (e) => {
     const name = document.getElementById("signup-name").value.trim();
     const email = document.getElementById("signup-email").value.trim();
     const password = document.getElementById("signup-password").value;
-    const sendBtn = document.getElementById("send-signup-otp-btn");
+    const sendBtn = document.getElementById("create-account-btn");
 
     sendBtn.disabled = true;
-    sendBtn.textContent = "SENDING CODE TO GMAIL...";
+    sendBtn.textContent = "CREATING ACCOUNT...";
 
     try {
-        const res = await fetch(`${API_BASE}/send-register-otp`, {
+        const res = await fetch(`${API_BASE}/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name, email, password })
@@ -271,54 +307,17 @@ signupForm.addEventListener("submit", async (e) => {
         const data = await res.json();
 
         if (!res.ok) {
-            showAuthAlert(data.message || "Could not send code.", true);
-        } else {
-            showAuthAlert(data.message || "Verification code sent to your Gmail!");
-            document.getElementById("signup-otp-box").classList.remove("hidden");
-            sendBtn.textContent = "RESEND VERIFICATION CODE";
-        }
-    } catch (err) {
-        showAuthAlert("Cannot connect to server. Make sure backend is running on port 5000.", true);
-    } finally {
-        sendBtn.disabled = false;
-    }
-});
-
-// 6. CREATE ACCOUNT: STEP 2 — VERIFY OTP & SAVE TO MONGODB
-document.getElementById("verify-signup-btn").addEventListener("click", async () => {
-    hideAuthAlert();
-    const email = document.getElementById("signup-email").value.trim();
-    const otp = document.getElementById("signup-otp").value.trim();
-    const verifyBtn = document.getElementById("verify-signup-btn");
-
-    if (otp.length !== 6) {
-        showAuthAlert("Please enter the 6-digit code from your Gmail.", true);
-        return;
-    }
-
-    verifyBtn.disabled = true;
-    verifyBtn.textContent = "VERIFYING...";
-
-    try {
-        const res = await fetch(`${API_BASE}/verify-register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, otp })
-        });
-        const data = await res.json();
-
-        if (!res.ok) {
-            showAuthAlert(data.message || "Invalid verification code.", true);
+            showAuthAlert(data.message || "Could not create account.", true);
         } else {
             localStorage.setItem("twentyAuthToken", data.token);
             localStorage.setItem("twentyCurrentUser", JSON.stringify(data.user));
             renderAccountState();
         }
     } catch (err) {
-        showAuthAlert("Server connection error during verification.", true);
+        showAuthAlert("Cannot connect to server. Make sure backend is running on port 5000.", true);
     } finally {
-        verifyBtn.disabled = false;
-        verifyBtn.textContent = "VERIFY & CREATE ACCOUNT →";
+        sendBtn.disabled = false;
+        sendBtn.textContent = "CREATE ACCOUNT →";
     }
 });
 
@@ -330,16 +329,6 @@ signinForm.addEventListener("submit", async (e) => {
     const emailOrUser = document.getElementById("signin-email").value.trim();
     const password = document.getElementById("signin-password").value.trim();
     const btn = document.getElementById("signin-submit-btn");
-
-    if (
-        (emailOrUser.toLowerCase() === ADMIN_USERNAME || emailOrUser.toLowerCase() === "admin@twenty.com") &&
-        password === ADMIN_PASSWORD
-    ) {
-        sessionStorage.setItem("twentyAdminLoggedIn", "true");
-        localStorage.setItem("twentyAdminLoggedIn", "true");
-        window.location.href = "admin.html";
-        return;
-    }
 
     btn.disabled = true;
     btn.textContent = "SIGNING IN...";
@@ -353,11 +342,17 @@ signinForm.addEventListener("submit", async (e) => {
         const data = await res.json();
 
         if (!res.ok) {
-            showAuthAlert(data.message || "Invalid Gmail or password.", true);
+            showAuthAlert(data.message || "Invalid email or password.", true);
         } else {
             const existing = JSON.parse(localStorage.getItem("twentyCurrentUser")) || {};
             localStorage.setItem("twentyAuthToken", data.token);
             localStorage.setItem("twentyCurrentUser", JSON.stringify({ ...existing, ...data.user }));
+            if (data.user.role === "admin") {
+                sessionStorage.setItem("twentyAdminLoggedIn", "true");
+                localStorage.setItem("twentyAdminLoggedIn", "true");
+                window.location.href = "admin.html";
+                return;
+            }
             renderAccountState();
         }
     } catch (err) {
@@ -368,76 +363,38 @@ signinForm.addEventListener("submit", async (e) => {
     }
 });
 
-// 8. FORGOT PASSWORD: STEP 1 — SEND RESET CODE TO GMAIL
+// 8. RESET PASSWORD
 forgotForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideAuthAlert();
 
     const email = document.getElementById("forgot-email").value.trim();
-    const sendBtn = document.getElementById("send-forgot-otp-btn");
+    const newPassword = document.getElementById("forgot-new-password").value;
+    const sendBtn = document.getElementById("reset-password-btn");
 
     sendBtn.disabled = true;
-    sendBtn.textContent = "SENDING RESET CODE...";
-
-    try {
-        const res = await fetch(`${API_BASE}/forgot-password`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email })
-        });
-        const data = await res.json();
-
-        if (!res.ok) {
-            showAuthAlert(data.message || "Could not send reset code.", true);
-        } else {
-            showAuthAlert(data.message || "Reset code sent to your Gmail!");
-            document.getElementById("forgot-reset-box").classList.remove("hidden");
-            sendBtn.textContent = "RESEND RESET CODE";
-        }
-    } catch (err) {
-        showAuthAlert("Cannot connect to server.", true);
-    } finally {
-        sendBtn.disabled = false;
-    }
-});
-
-// 9. FORGOT PASSWORD: STEP 2 — VERIFY CODE & SET NEW PASSWORD
-document.getElementById("confirm-reset-btn").addEventListener("click", async () => {
-    hideAuthAlert();
-    const email = document.getElementById("forgot-email").value.trim();
-    const otp = document.getElementById("forgot-otp").value.trim();
-    const newPassword = document.getElementById("forgot-new-password").value;
-    const confirmBtn = document.getElementById("confirm-reset-btn");
-
-    if (otp.length !== 6 || newPassword.length < 6) {
-        showAuthAlert("Enter the 6-digit code and a new password (min 6 characters).", true);
-        return;
-    }
-
-    confirmBtn.disabled = true;
-    confirmBtn.textContent = "UPDATING PASSWORD...";
+    sendBtn.textContent = "UPDATING PASSWORD...";
 
     try {
         const res = await fetch(`${API_BASE}/reset-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, otp, newPassword })
+            body: JSON.stringify({ email, newPassword })
         });
         const data = await res.json();
 
         if (!res.ok) {
-            showAuthAlert(data.message || "Failed to reset password.", true);
+            showAuthAlert(data.message || "Could not reset password.", true);
         } else {
-            document.getElementById("forgot-reset-box").classList.add("hidden");
             forgotForm.reset();
             switchToSignin();
             showAuthAlert(data.message || "Password updated! Please sign in.");
         }
     } catch (err) {
-        showAuthAlert("Server error while resetting password.", true);
+        showAuthAlert("Cannot connect to server.", true);
     } finally {
-        confirmBtn.disabled = false;
-        confirmBtn.textContent = "RESET PASSWORD →";
+        sendBtn.disabled = false;
+        sendBtn.textContent = "RESET PASSWORD →";
     }
 });
 

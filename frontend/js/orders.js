@@ -24,7 +24,18 @@ function updateCartCount() {
 }
 
 // 3. GET ORDERS (NEWEST FIRST)
-function getOrders() {
+async function getOrders() {
+    const currentUser = JSON.parse(localStorage.getItem("twentyCurrentUser"));
+    if (currentUser?.email) {
+        try {
+            const response = await fetch(`http://localhost:5000/api/orders?email=${encodeURIComponent(currentUser.email)}`);
+            if (response.ok) {
+                const remoteOrders = await response.json();
+                if (remoteOrders.length) return remoteOrders;
+            }
+        } catch (error) {
+        }
+    }
     const orders = JSON.parse(localStorage.getItem("twentyOrders")) || [];
     return orders.slice().reverse();
 }
@@ -63,11 +74,11 @@ function getStatusBadge(status) {
 }
 
 // 6. DISPLAY ORDERS
-function renderOrders(searchTerm = "") {
+async function renderOrders(searchTerm = "") {
     const container = document.getElementById("orders-container");
     if (!container) return;
 
-    const allOrders = getOrders();
+    const allOrders = await getOrders();
 
     // Empty State
     if (allOrders.length === 0) {

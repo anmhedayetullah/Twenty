@@ -108,7 +108,7 @@ function renderCheckoutSummary() {
 document.getElementById("city").addEventListener("change", renderCheckoutSummary);
 
 // 5. PLACE ORDER (CASH ON DELIVERY)
-document.getElementById("checkout-form").addEventListener("submit", (e) => {
+document.getElementById("checkout-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const cart = getCart();
@@ -128,7 +128,6 @@ document.getElementById("checkout-form").addEventListener("submit", (e) => {
     const orderId = "#TW-" + Math.floor(1000 + Math.random() * 9000);
 
     const newOrder = {
-        orderId,
         createdAt: new Date().toISOString(),
         status: "Pending",
         customer: {
@@ -148,6 +147,20 @@ document.getElementById("checkout-form").addEventListener("submit", (e) => {
             trxId: ""
         }
     };
+
+    try {
+        const response = await fetch("http://localhost:5000/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newOrder)
+        });
+        const savedOrder = await response.json();
+        if (!response.ok) throw new Error(savedOrder.message || "Could not place order");
+        newOrder.orderId = savedOrder.orderId;
+        newOrder._id = savedOrder._id;
+    } catch (error) {
+        newOrder.orderId = "#TW-" + Math.floor(1000 + Math.random() * 9000);
+    }
 
     const existingOrders = JSON.parse(localStorage.getItem("twentyOrders")) || [];
     existingOrders.push(newOrder);

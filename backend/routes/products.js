@@ -8,7 +8,7 @@ router.get("/", async (req, res) => {
     try {
         const { category, gender, search } = req.query;
         const filter = {};
-        if (req.query.all !== "true") filter.inStock = true;
+        if (req.query.inStock === "true") filter.inStock = true;
         if (category) filter.category = { $regex: new RegExp(`^${category}$`, "i") };
         if (gender) filter.gender = { $regex: new RegExp(`^${gender}$`, "i") };
         if (search) filter.name = { $regex: search, $options: "i" };

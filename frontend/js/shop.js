@@ -65,11 +65,18 @@ function renderShopProducts(list) {
     grid.innerHTML = list.map(p => {
         const id = p._id || p.id;
         const img = (Array.isArray(p.images) && p.images[0]) || p.image || "https://placehold.co/800x1000/F8F5F0/D85A30?text=TWENTY";
+        const isOutOfStock = p.inStock === false;
+        const badgeText = isOutOfStock ? "OUT OF STOCK" : (p.badge || "");
+        const badgeStyle = isOutOfStock
+            ? "bg-red-600 text-white"
+            : "bg-dark text-white";
+
         return `
             <a href="product.html?id=${id}" class="product-card group block">
-                <div class="bg-cream overflow-hidden aspect-[4/5]">
+                <div class="relative bg-cream overflow-hidden aspect-[4/5]">
+                    ${badgeText ? `<span class="absolute top-3 left-3 z-10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${badgeStyle}">${badgeText}</span>` : ""}
                     <img src="${img}" alt="${p.name}"
-                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ${isOutOfStock ? "opacity-75" : ""}">
                 </div>
                 <p class="text-[11px] uppercase tracking-widest text-gray-400 mt-3">${p.category || "Collection"}</p>
                 <h3 class="text-sm font-bold mt-1 group-hover:text-coral transition">${p.name}</h3>

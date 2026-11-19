@@ -33,6 +33,33 @@ function logout() {
     window.location.href = "login.html";
 }
 
+function compressImageFile(file, maxWidth = 800, quality = 0.72) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.onload = event => {
+            const img = new Image();
+            img.onerror = () => reject(new Error("Invalid image file"));
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+                const canvas = document.createElement("canvas");
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL("image/jpeg", quality));
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 async function protectAdmin() {
     const token = localStorage.getItem("twentyAuthToken");
     if (!token) {
@@ -152,32 +179,165 @@ async function loadProducts() {
         </div>
         <div id="product-list" class="bg-white border border-gray-200"></div>
         <div id="product-modal" class="hidden fixed inset-0 z-[200] bg-dark/60 p-4 items-center justify-center">
-            <form id="product-form" class="w-full max-w-xl max-h-[90dvh] overflow-y-auto bg-white p-6">
+            <form id="product-form" class="w-full max-w-2xl max-h-[90dvh] overflow-y-auto bg-white p-6">
                 <div class="flex items-center justify-between border-b border-gray-100 pb-4">
                     <h2 id="product-modal-title" class="text-xl font-bold">Add product</h2>
                     <button type="button" id="close-product-modal" class="text-2xl leading-none text-gray-400" aria-label="Close">&times;</button>
                 </div>
                 <input type="hidden" id="product-id">
                 <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <label class="sm:col-span-2 text-xs font-bold uppercase">Product name<input id="product-name" required class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm"></label>
-                    <label class="text-xs font-bold uppercase">Price<input id="product-price" type="number" min="0" required class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm"></label>
-                    <label class="text-xs font-bold uppercase">Category<input id="product-category" required class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm"></label>
-                    <label class="text-xs font-bold uppercase">Gender<select id="product-gender" class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm"><option>Men</option><option>Women</option><option>Unisex</option></select></label>
-                    <label class="text-xs font-bold uppercase">Badge<input id="product-badge" class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm"></label>
-                    <label class="sm:col-span-2 text-xs font-bold uppercase">Image URL<input id="product-image" required class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm"></label>
-                    <label class="sm:col-span-2 text-xs font-bold uppercase">Description<textarea id="product-description" rows="3" class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm"></textarea></label>
-                    <label class="text-xs font-bold uppercase">Sizes<input id="product-sizes" placeholder="S, M, L, XL" class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm"></label>
-                    <label class="text-xs font-bold uppercase">Colors<input id="product-colors" placeholder="Black, White" class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm"></label>
-                    <label class="sm:col-span-2 flex items-center gap-2 text-sm font-semibold"><input id="product-in-stock" type="checkbox" checked> In stock</label>
+                    <label class="sm:col-span-2 text-xs font-bold uppercase">Product name
+                        <input id="product-name" required class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm">
+                    </label>
+                    <label class="text-xs font-bold uppercase">Price (৳)
+                        <input id="product-price" type="number" min="0" required class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm">
+                    </label>
+                    <label class="text-xs font-bold uppercase">Category
+                        <select id="product-category" required class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm bg-white">
+                            <option value="Men">Men</option>
+                            <option value="Women">Women</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
+                    </label>
+                    <label class="text-xs font-bold uppercase">Gender
+                        <select id="product-gender" class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm bg-white">
+                            <option value="Men">Men</option>
+                            <option value="Women">Women</option>
+                            <option value="Unisex">Unisex</option>
+                        </select>
+                    </label>
+                    <label class="text-xs font-bold uppercase">Stock Status
+                        <select id="product-stock-status" class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm bg-white">
+                            <option value="in">Stock In</option>
+                            <option value="out">Stock Out</option>
+                        </select>
+                    </label>
+                    <label class="text-xs font-bold uppercase">Sizes
+                        <input id="product-sizes" placeholder="S, M, L, XL" class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm">
+                    </label>
+                    <label class="text-xs font-bold uppercase">Badge (Optional)
+                        <input id="product-badge" placeholder="New / Sale" class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm">
+                    </label>
+
+                    <!-- COVER IMAGE (LINK OR STORAGE) -->
+                    <div class="sm:col-span-2 border border-gray-200 p-4 bg-[#faf9f7]">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-xs font-bold uppercase">Cover Image *</span>
+                            <label class="cursor-pointer bg-dark text-white px-3 py-1.5 text-[11px] font-bold uppercase hover:bg-coral transition">
+                                Choose from Storage
+                                <input id="cover-image-file" type="file" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                        <input id="product-image" placeholder="Paste image link OR choose file from storage" required class="mt-2.5 w-full border border-gray-300 bg-white px-3 py-2.5 text-sm">
+                        <div id="cover-preview-wrap" class="hidden mt-3 flex items-center gap-3">
+                            <img id="cover-preview" src="" alt="Cover preview" class="w-16 h-20 object-cover border border-gray-300 bg-white">
+                            <span class="text-xs text-gray-500">Cover image selected</span>
+                        </div>
+                    </div>
+
+                    <!-- GALLERY IMAGES (3-4 EXTRA IMAGES: LINK OR STORAGE) -->
+                    <div class="sm:col-span-2 border border-gray-200 p-4 bg-[#faf9f7]">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-xs font-bold uppercase">More Product Images (Up to 4)</span>
+                            <label class="cursor-pointer bg-dark text-white px-3 py-1.5 text-[11px] font-bold uppercase hover:bg-coral transition">
+                                + Upload from Storage
+                                <input id="gallery-image-files" type="file" accept="image/*" multiple class="hidden">
+                            </label>
+                        </div>
+                        <div class="mt-3 space-y-2">
+                            <input type="text" data-gallery-input placeholder="Extra Image 1 URL (or upload from storage)" class="w-full border border-gray-300 bg-white px-3 py-2 text-xs">
+                            <input type="text" data-gallery-input placeholder="Extra Image 2 URL (or upload from storage)" class="w-full border border-gray-300 bg-white px-3 py-2 text-xs">
+                            <input type="text" data-gallery-input placeholder="Extra Image 3 URL (or upload from storage)" class="w-full border border-gray-300 bg-white px-3 py-2 text-xs">
+                            <input type="text" data-gallery-input placeholder="Extra Image 4 URL (or upload from storage)" class="w-full border border-gray-300 bg-white px-3 py-2 text-xs">
+                        </div>
+                        <div id="gallery-previews" class="mt-3 flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <label class="sm:col-span-2 text-xs font-bold uppercase">Description
+                        <textarea id="product-description" rows="3" class="mt-2 w-full border border-gray-300 px-3 py-2.5 text-sm"></textarea>
+                    </label>
                 </div>
                 <button type="submit" id="save-product" class="mt-6 w-full bg-coral text-white py-3 text-xs font-bold uppercase">Save product</button>
             </form>
         </div>
     `;
+
     const list = document.getElementById("product-list");
     const modal = document.getElementById("product-modal");
     const form = document.getElementById("product-form");
+    const coverInput = document.getElementById("product-image");
+    const coverPreviewWrap = document.getElementById("cover-preview-wrap");
+    const coverPreview = document.getElementById("cover-preview");
+    const galleryInputs = Array.from(document.querySelectorAll("[data-gallery-input]"));
+    const galleryPreviews = document.getElementById("gallery-previews");
     let productCache = [];
+
+    function updateImagePreviews() {
+        const coverVal = coverInput.value.trim();
+        if (coverVal) {
+            coverPreview.src = coverVal;
+            coverPreviewWrap.classList.remove("hidden");
+        } else {
+            coverPreviewWrap.classList.add("hidden");
+        }
+
+        const validGallery = galleryInputs.map(inp => inp.value.trim()).filter(Boolean);
+        galleryPreviews.innerHTML = validGallery.map((src, idx) => `
+            <div class="relative">
+                <img src="${escapeHtml(src)}" alt="Extra ${idx + 1}" class="w-14 h-16 object-cover border border-gray-300 bg-white">
+                <button type="button" data-clear-gallery="${idx}" class="absolute -top-1.5 -right-1.5 bg-red-600 text-white w-4 h-4 text-[10px] leading-none flex items-center justify-center">&times;</button>
+            </div>
+        `).join("");
+    }
+
+    coverInput.addEventListener("input", updateImagePreviews);
+    galleryInputs.forEach(inp => inp.addEventListener("input", updateImagePreviews));
+
+    galleryPreviews.addEventListener("click", event => {
+        const clearBtn = event.target.closest("[data-clear-gallery]");
+        if (!clearBtn) return;
+        const activeInputs = galleryInputs.filter(inp => inp.value.trim());
+        const target = activeInputs[Number(clearBtn.dataset.clearGallery)];
+        if (target) target.value = "";
+        updateImagePreviews();
+    });
+
+    document.getElementById("cover-image-file").addEventListener("change", async event => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        try {
+            coverInput.value = await compressImageFile(file);
+            updateImagePreviews();
+        } catch (err) {
+            alert("Could not load image file.");
+        }
+        event.target.value = "";
+    });
+
+    document.getElementById("gallery-image-files").addEventListener("change", async event => {
+        const files = Array.from(event.target.files || []).slice(0, 4);
+        if (!files.length) return;
+        try {
+            for (const file of files) {
+                const emptySlot = galleryInputs.find(inp => !inp.value.trim());
+                if (!emptySlot) break;
+                emptySlot.value = await compressImageFile(file, 700, 0.68);
+            }
+            updateImagePreviews();
+        } catch (err) {
+            alert("Could not load selected images.");
+        }
+        event.target.value = "";
+    });
+
+    document.getElementById("product-category").addEventListener("change", event => {
+        const cat = event.target.value;
+        const genderSelect = document.getElementById("product-gender");
+        if (cat === "Men") genderSelect.value = "Men";
+        else if (cat === "Women") genderSelect.value = "Women";
+        else if (cat === "Accessories") genderSelect.value = "Unisex";
+    });
+
     async function refresh() {
         const response = await fetch(`${API_BASE}/products`);
         const products = await response.json();
@@ -185,67 +345,106 @@ async function loadProducts() {
         list.innerHTML = products.length ? `<div class="divide-y divide-gray-100">${products.map(product => `
             <div class="p-4 flex gap-4 items-center">
                 <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" class="w-16 h-16 object-cover bg-gray-100" onerror="this.src='https://placehold.co/96x96/F8F5F0/D85A30?text=TWENTY'">
-                <div class="min-w-0 flex-1"><p class="font-bold truncate">${escapeHtml(product.name)}</p><p class="text-xs text-gray-500 mt-1">${escapeHtml(product.category)} · ${escapeHtml(product.gender)}</p></div>
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-2">
+                        <p class="font-bold truncate">${escapeHtml(product.name)}</p>
+                        <span class="px-2 py-0.5 text-[10px] font-bold uppercase ${product.inStock === false ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}">
+                            ${product.inStock === false ? "Stock Out" : "Stock In"}
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">${escapeHtml(product.category)} · ${escapeHtml(product.gender)}</p>
+                </div>
                 <p class="font-bold">${formatPrice(product.price)}</p>
                 <button data-edit-product="${product._id}" class="border border-gray-300 px-3 py-2 text-xs font-bold">Edit</button>
                 <button data-delete-product="${product._id}" class="border border-red-200 text-red-600 px-3 py-2 text-xs font-bold">Delete</button>
             </div>
         `).join("")}</div>` : `<p class="text-gray-400 py-12 text-center">No products yet.</p>`;
     }
+
     function openProductModal(product = null) {
         form.reset();
+        galleryInputs.forEach(inp => inp.value = "");
         document.getElementById("product-modal-title").textContent = product ? "Edit product" : "Add product";
         document.getElementById("product-id").value = product?._id || "";
         document.getElementById("product-name").value = product?.name || "";
         document.getElementById("product-price").value = product?.price || "";
-        document.getElementById("product-category").value = product?.category || "";
-        document.getElementById("product-gender").value = product?.gender || "Unisex";
+
+        const catVal = product?.category || "Men";
+        const catSelect = document.getElementById("product-category");
+        catSelect.value = ["Men", "Women", "Accessories"].includes(catVal) ? catVal : "Men";
+
+        document.getElementById("product-gender").value = product?.gender || (catSelect.value === "Accessories" ? "Unisex" : catSelect.value);
+        document.getElementById("product-stock-status").value = product && product.inStock === false ? "out" : "in";
         document.getElementById("product-badge").value = product?.badge || "";
         document.getElementById("product-image").value = product?.image || "";
         document.getElementById("product-description").value = product?.description || "";
         document.getElementById("product-sizes").value = (product?.sizes || []).join(", ");
-        document.getElementById("product-colors").value = (product?.colors || []).join(", ");
-        document.getElementById("product-in-stock").checked = product ? product.inStock !== false : true;
+
+        const existingGallery = (Array.isArray(product?.images) ? product.images : [])
+            .filter(img => img && img !== product?.image);
+        existingGallery.slice(0, 4).forEach((url, idx) => {
+            if (galleryInputs[idx]) galleryInputs[idx].value = url;
+        });
+
+        updateImagePreviews();
         modal.classList.remove("hidden");
         modal.classList.add("flex");
         document.getElementById("product-name").focus();
     }
+
     function closeProductModal() {
         modal.classList.add("hidden");
         modal.classList.remove("flex");
     }
+
     document.getElementById("new-product").addEventListener("click", () => openProductModal());
     document.getElementById("close-product-modal").addEventListener("click", closeProductModal);
     modal.addEventListener("click", event => {
         if (event.target === modal) closeProductModal();
     });
+
     form.addEventListener("submit", async event => {
         event.preventDefault();
-        const id = document.getElementById("product-id").value;
-        const payload = {
-            name: document.getElementById("product-name").value.trim(),
-            price: Number(document.getElementById("product-price").value),
-            category: document.getElementById("product-category").value.trim(),
-            gender: document.getElementById("product-gender").value,
-            badge: document.getElementById("product-badge").value.trim(),
-            image: document.getElementById("product-image").value.trim(),
-            description: document.getElementById("product-description").value.trim(),
-            sizes: document.getElementById("product-sizes").value.split(",").map(value => value.trim()).filter(Boolean),
-            colors: document.getElementById("product-colors").value.split(",").map(value => value.trim()).filter(Boolean),
-            inStock: document.getElementById("product-in-stock").checked
-        };
-        const response = await fetch(`${API_BASE}/products${id ? `/${id}` : ""}`, {
-            method: id ? "PATCH" : "POST",
-            headers: authHeaders(),
-            body: JSON.stringify(payload)
-        });
-        if (!response.ok) {
-            alert("Could not save product.");
-            return;
+        const saveBtn = document.getElementById("save-product");
+        saveBtn.disabled = true;
+        saveBtn.textContent = "SAVING...";
+
+        try {
+            const id = document.getElementById("product-id").value;
+            const coverImage = document.getElementById("product-image").value.trim();
+            const extraImages = galleryInputs.map(inp => inp.value.trim()).filter(Boolean);
+            const allImages = [coverImage, ...extraImages.filter(img => img !== coverImage)];
+
+            const payload = {
+                name: document.getElementById("product-name").value.trim(),
+                price: Number(document.getElementById("product-price").value),
+                category: document.getElementById("product-category").value,
+                gender: document.getElementById("product-gender").value,
+                badge: document.getElementById("product-badge").value.trim(),
+                image: coverImage,
+                images: allImages,
+                description: document.getElementById("product-description").value.trim(),
+                sizes: document.getElementById("product-sizes").value.split(",").map(value => value.trim()).filter(Boolean),
+                inStock: document.getElementById("product-stock-status").value === "in"
+            };
+
+            const response = await fetch(`${API_BASE}/products${id ? `/${id}` : ""}`, {
+                method: id ? "PATCH" : "POST",
+                headers: authHeaders(),
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                alert("Could not save product. Try using smaller images or image URLs.");
+                return;
+            }
+            closeProductModal();
+            refresh();
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "SAVE PRODUCT";
         }
-        closeProductModal();
-        refresh();
     });
+
     list.addEventListener("click", async event => {
         const editButton = event.target.closest("[data-edit-product]");
         if (editButton) {

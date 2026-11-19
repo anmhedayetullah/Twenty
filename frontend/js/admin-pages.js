@@ -117,21 +117,13 @@ async function loadProfile() {
             <p class="text-xs uppercase tracking-[3px] text-coral font-bold">Protected account</p>
             <h1 class="text-3xl font-bold mt-2">Profile</h1>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div class="md:col-span-2 border border-gray-200 bg-white p-6">
-                <p class="text-xs uppercase tracking-wider text-gray-400 font-bold">Account details</p>
-                <dl class="mt-5 divide-y divide-gray-100">
-                    <div class="py-4 grid grid-cols-3"><dt class="text-sm text-gray-500">Name</dt><dd class="col-span-2 font-semibold">${escapeHtml(user.name)}</dd></div>
-                    <div class="py-4 grid grid-cols-3"><dt class="text-sm text-gray-500">Email</dt><dd class="col-span-2 font-semibold">${escapeHtml(user.email)}</dd></div>
-                    <div class="py-4 grid grid-cols-3"><dt class="text-sm text-gray-500">Access</dt><dd class="col-span-2 font-semibold text-coral">Administrator</dd></div>
-                </dl>
-            </div>
-            <div class="border border-gray-200 bg-white p-6">
-                <p class="text-xs uppercase tracking-wider text-gray-400 font-bold">Admin navigation</p>
-                <div class="mt-5 space-y-2">
-                    ${Object.entries(pageLabels).map(([key, [label, href]]) => key === "profile" ? "" : `<a class="block border border-gray-200 px-4 py-3 text-sm font-semibold hover:border-coral" href="${href}">${label}</a>`).join("")}
-                </div>
-            </div>
+        <div class="max-w-3xl border border-gray-200 bg-white p-6">
+            <p class="text-xs uppercase tracking-wider text-gray-400 font-bold">Account details</p>
+            <dl class="mt-5 divide-y divide-gray-100">
+                <div class="py-4 grid grid-cols-3"><dt class="text-sm text-gray-500">Name</dt><dd class="col-span-2 font-semibold">${escapeHtml(user.name)}</dd></div>
+                <div class="py-4 grid grid-cols-3"><dt class="text-sm text-gray-500">Email</dt><dd class="col-span-2 font-semibold">${escapeHtml(user.email)}</dd></div>
+                <div class="py-4 grid grid-cols-3"><dt class="text-sm text-gray-500">Access</dt><dd class="col-span-2 font-semibold text-coral">Administrator</dd></div>
+            </dl>
         </div>
     `;
 }
